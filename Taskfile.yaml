@@ -1,0 +1,38 @@
+# Docs: https://taskfile.dev/#/usage
+version: "3"
+
+tasks:
+  lint:
+    cmds:
+      - golangci-lint run
+
+  format:
+    cmds:
+      - go fmt ./...
+
+  test:
+    cmds:
+      - |
+        go clean -testcache
+        go test ./...
+
+  build:
+    cmds:
+      - go build -v -o bin/twitchets
+
+  build:docker:
+    cmds:
+      - docker build . -t arranhs/twitchets
+
+  run:
+    cmds:
+      - go run .
+
+  run:docker:
+    deps: [build:docker]
+    cmds:
+      - |
+        docker run --rm \
+          --name twitchets \
+          -p 5656:5656 \
+          arranhs/twitchets

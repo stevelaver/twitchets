@@ -1,0 +1,8 @@
+services:
+  t4g:
+    image: arranhs/twitchets
+    restart: unless-stopped
+    build:
+      context: .
+    ports:
+      - 5656:5656
