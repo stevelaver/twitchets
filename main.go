@@ -92,12 +92,20 @@ func processTickets(tickets []twickets.Ticket) {
 
 			if isMonitored {
 				slog.Info(
-					"found tickets for monitored event",
+					"Found tickets for monitored event",
 					"name", ticket.Event.Name,
 					"tickets", ticket.TicketQuantity,
 					"ticketCost", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity),
 					"totalCost", ticket.TotalSellingPrice.String(),
 				)
+
+				err := twickets.SendTicketNotification(ticket)
+				if err != nil {
+					slog.Error(
+						"Failed to send notification",
+						"err", err,
+					)
+				}
 			}
 		}
 	}
