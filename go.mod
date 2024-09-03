@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/gotify/go-api-client/v2 v2.0.4
+	github.com/joho/godotenv v1.5.1
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/orsinium-labs/enum v1.4.0
 	github.com/samber/lo v1.47.0

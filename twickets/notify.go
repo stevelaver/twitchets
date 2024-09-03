@@ -5,31 +5,43 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/gotify/go-api-client/v2/auth"
 	"github.com/gotify/go-api-client/v2/client"
 	"github.com/gotify/go-api-client/v2/client/message"
 	"github.com/gotify/go-api-client/v2/gotify"
 	"github.com/gotify/go-api-client/v2/models"
-)
-
-const (
-	GotifyURL   = "https://notifications.arranhs.com"
-	GotifyToken = "AxNVvRfx9.ZKCTj"
+	"github.com/joho/godotenv"
 )
 
 var (
 	gotifyURL    *url.URL
+	gotifyToken  string
 	gotifyClient *client.GotifyREST
 )
 
 func init() {
-	// Parse gotify url
+	// Load .env file if it exists
+	_ = godotenv.Load()
+
+	gotifyUrlEnvVar := os.Getenv("GOTIFY_URL")
+	if gotifyUrlEnvVar == "" {
+		log.Fatal("GOTIFY_URL is not set")
+	}
+
+	gotifyTokenEnvVar := os.Getenv("GOTIFY_TOKEN")
+	if gotifyTokenEnvVar == "" {
+		log.Fatal("GOTIFY_TOKEN is not set")
+	}
+
 	var err error
-	gotifyURL, err = url.Parse(GotifyURL)
+	gotifyURL, err = url.Parse(gotifyUrlEnvVar)
 	if err != nil {
 		log.Fatal("failed to parse gotify url")
 	}
+
+	gotifyToken = gotifyTokenEnvVar // TODO validate this token
 
 	gotifyClient = gotify.NewClient(gotifyURL, &http.Client{})
 }
@@ -56,7 +68,7 @@ func SendTicketNotification(ticket Ticket) error {
 
 	_, err := gotifyClient.Message.CreateMessage(
 		params,
-		auth.TokenAuth(GotifyToken),
+		auth.TokenAuth(gotifyToken),
 	)
 	if err != nil {
 		return err
