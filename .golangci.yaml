@@ -35,11 +35,16 @@ linters-settings:
       - name: cognitive-complexity
         disabled: true
 
-      # - name: empty-lines
-      #   disabled: true
+      - name: empty-lines
+        disabled: true
 
       - name: line-length-limit
         arguments: [120]
+
+      - name: unhandled-error
+        arguments:
+          - fmt.Printf
+          - fmt.Println
 
       - name: var-naming
         arguments:

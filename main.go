@@ -50,6 +50,16 @@ func init() {
 }
 
 func main() {
+	gotifyUrl := os.Getenv("GOTIFY_URL")
+	if gotifyUrl == "" {
+		log.Fatal("GOTIFY_URL is not set")
+	}
+
+	gotifyToken := os.Getenv("GOTIFY_TOKEN")
+	if gotifyToken == "" {
+		log.Fatal("GOTIFY_TOKEN is not set")
+	}
+
 	country := twickets.Countries.Parse(countryCode)
 	if country == nil {
 		log.Fatalf("'%s' is not a valid country code", country)
@@ -63,8 +73,12 @@ func main() {
 		}
 	}
 
+	notificationClient, err := twickets.NewGotifyClient(gotifyUrl, gotifyToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	twicketsClient := twickets.NewClient(nil)
-	notificationClient := getNotificationClient()
 
 	slog.Info(
 		fmt.Sprintf("Monitoring: %s", strings.Join(monitoredEventNames, ", ")),
@@ -127,7 +141,6 @@ func fetchAndProcessTickets(
 	)
 
 	for _, ticket := range filteredTickets {
-
 		slog.Info(
 			"Found tickets for monitored event",
 			"name", ticket.Event.Name,
@@ -144,23 +157,4 @@ func fetchAndProcessTickets(
 			)
 		}
 	}
-}
-
-func getNotificationClient() twickets.NotificationClient {
-	gotifyUrl := os.Getenv("GOTIFY_URL")
-	if gotifyUrl == "" {
-		log.Fatal("GOTIFY_URL is not set")
-	}
-
-	gotifyToken := os.Getenv("GOTIFY_TOKEN")
-	if gotifyToken == "" {
-		log.Fatal("GOTIFY_TOKEN is not set")
-	}
-
-	client, err := twickets.NewGotifyClient(gotifyUrl, gotifyToken)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return client
 }
