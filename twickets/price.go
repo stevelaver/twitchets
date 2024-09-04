@@ -48,27 +48,18 @@ type Price struct {
 	Amount   int      `json:"amountInCents"` // In cents, pennies etc.
 }
 
-func (p *Price) Number() float64 {
-	if p == nil {
-		return 0
-	}
+func (p Price) Number() float64 {
 	return float64(p.Amount) / 100
 }
 
-func (p *Price) String() string {
-	if p == nil {
-		return ""
-	}
+func (p Price) String() string {
 	return priceString(p.Number(), p.Currency)
 }
 
 // Add price. Currency will be kept.
 // Returns a new price.
-func (p *Price) Add(other Price) *Price {
-	if p == nil {
-		return nil
-	}
-	return &Price{
+func (p Price) Add(other Price) Price {
+	return Price{
 		Currency: p.Currency,
 		Amount:   p.Amount + other.Amount,
 	}
@@ -76,22 +67,16 @@ func (p *Price) Add(other Price) *Price {
 
 // Subtract price. Currency will be kept.
 // Returns a new price.
-func (p *Price) Subtract(other Price) *Price {
-	if p == nil {
-		return nil
-	}
-	return &Price{
+func (p Price) Subtract(other Price) Price {
+	return Price{
 		Currency: p.Currency,
 		Amount:   p.Amount - other.Amount,
 	}
 }
 
 // Multiply price. Returns a new price.
-func (p *Price) Multiply(num int) *Price {
-	if p == nil {
-		return nil
-	}
-	return &Price{
+func (p Price) Multiply(num int) Price {
+	return Price{
 		Currency: p.Currency,
 		Amount:   p.Amount * num,
 	}
@@ -99,11 +84,8 @@ func (p *Price) Multiply(num int) *Price {
 
 // Divide price. Currency will be kept.
 // Returns a new price.
-func (p *Price) Divide(num int) *Price {
-	if p == nil {
-		return nil
-	}
-	return &Price{
+func (p Price) Divide(num int) Price {
+	return Price{
 		Currency: p.Currency,
 		Amount:   int(math.Round(float64(p.Amount) / float64(num))),
 	}
