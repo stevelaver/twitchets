@@ -19,9 +19,19 @@ type NotificationClient interface {
 
 func notificationMessage(ticket Ticket) string {
 	lines := []string{
-		ticket.Event.Date.Format("Monday 2 January 2006"),
+		fmt.Sprintf(
+			"%s %s",
+			ticket.Event.Time.Format("3:04pm"),
+			ticket.Event.Date.Format("Monday 2 January 2006"),
+		),
 		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
-		fmt.Sprintf("Ticket Price: %s", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity)),
+		fmt.Sprintf(
+			"Ticket Price: %s",
+			priceString(
+				(ticket.TotalSellingPrice.Number()+ticket.TotalTwicketsFee.Number())/float64(ticket.TicketQuantity),
+				ticket.TotalSellingPrice.Currency,
+			),
+		),
 		fmt.Sprintf("Original Price: %s", ticket.FaceValuePrice.PerString(ticket.TicketQuantity)),
 	}
 
@@ -39,9 +49,20 @@ var _ NotificationClient = GotifyClient{}
 func (g GotifyClient) SendTicketNotification(ticket Ticket) error {
 	params := message.NewCreateMessageParams()
 	params.Body = &models.MessageExternal{
-		Title:    ticket.Event.Name,
-		Message:  notificationMessage(ticket),
-		Extras:   map[string]any{},
+		Title:   ticket.Event.Name,
+		Message: notificationMessage(ticket),
+		Extras: map[string]any{
+			"extras": map[string]any{
+				"client::display": map[string]any{
+					"contentType": "text/markdown",
+				},
+				"client::notification": map[string]any{
+					"click": map[string]any{
+						"url": ticket.Link(),
+					},
+				},
+			},
+		},
 		Priority: 5,
 	}
 
