@@ -2,77 +2,69 @@ package twickets
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
-	"os"
+	"strings"
 
 	"github.com/gotify/go-api-client/v2/auth"
 	"github.com/gotify/go-api-client/v2/client"
 	"github.com/gotify/go-api-client/v2/client/message"
 	"github.com/gotify/go-api-client/v2/gotify"
 	"github.com/gotify/go-api-client/v2/models"
-	"github.com/joho/godotenv"
 )
 
-var (
-	gotifyURL    *url.URL
-	gotifyToken  string
-	gotifyClient *client.GotifyREST
-)
-
-func init() {
-	// Load .env file if it exists
-	_ = godotenv.Load()
-
-	gotifyUrlEnvVar := os.Getenv("GOTIFY_URL")
-	if gotifyUrlEnvVar == "" {
-		log.Fatal("GOTIFY_URL is not set")
-	}
-
-	gotifyTokenEnvVar := os.Getenv("GOTIFY_TOKEN")
-	if gotifyTokenEnvVar == "" {
-		log.Fatal("GOTIFY_TOKEN is not set")
-	}
-
-	var err error
-	gotifyURL, err = url.Parse(gotifyUrlEnvVar)
-	if err != nil {
-		log.Fatal("failed to parse gotify url")
-	}
-
-	gotifyToken = gotifyTokenEnvVar // TODO validate this token
-
-	gotifyClient = gotify.NewClient(gotifyURL, &http.Client{})
+type NotificationClient interface {
+	SendTicketNotification(Ticket) error
 }
 
-func SendTicketNotification(ticket Ticket) error {
-	notificationMessage := fmt.Sprintf(`
-	Day: %s
-	Number of tickets: %d
-	Ticket Price: %s
-	Orignal Price: %s
-	`,
+func notificationMessage(ticket Ticket) string {
+	lines := []string{
 		ticket.Event.Date.Format("Monday 2 January 2006"),
-		ticket.TicketQuantity,
-		ticket.TotalSellingPrice.PerString(ticket.TicketQuantity),
-		ticket.TotalSellingPrice.String(),
-	)
+		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
+		fmt.Sprintf("Ticket Price: %s", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity)),
+		fmt.Sprintf("Original Price: %s", ticket.FaceValuePrice.PerString(ticket.TicketQuantity)),
+	}
 
+	return strings.Join(lines, "\n")
+}
+
+type GotifyClient struct {
+	url    *url.URL
+	token  string
+	client *client.GotifyREST
+}
+
+var _ NotificationClient = GotifyClient{}
+
+func (g GotifyClient) SendTicketNotification(ticket Ticket) error {
 	params := message.NewCreateMessageParams()
 	params.Body = &models.MessageExternal{
 		Title:    ticket.Event.Name,
-		Message:  notificationMessage,
+		Message:  notificationMessage(ticket),
+		Extras:   map[string]any{},
 		Priority: 5,
 	}
 
-	_, err := gotifyClient.Message.CreateMessage(
+	_, err := g.client.Message.CreateMessage(
 		params,
-		auth.TokenAuth(gotifyToken),
+		auth.TokenAuth(g.token),
 	)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func NewGotifyClient(gotifyUrl, gotifyToken string) (*GotifyClient, error) {
+	parsedGotifyUrl, err := url.Parse(gotifyUrl)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse gotify url: %v", err)
+	}
+
+	return &GotifyClient{
+		url:    parsedGotifyUrl,
+		token:  gotifyToken, // TODO validate this token?
+		client: gotify.NewClient(parsedGotifyUrl, &http.Client{}),
+	}, nil
 }

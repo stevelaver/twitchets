@@ -34,7 +34,7 @@ func TicketURL(ticketId string, numTickets int) string {
 
 // FeedUrl gets the feel url. By default gets the last minute of tickets up to a maximum of 100.
 // https://www.twickets.live/services/catalogue?api_key=83d6ec0c-54bb-4da3-b2a1-f3cb47b984f1&count=100&q=countryCode=GB
-func FeedUrl(input GetTicketsInput) string {
+func FeedUrl(input FetchTicketsInput) string {
 	feedUrl := cloneURL(twicketsUrl)
 	feedUrl = feedUrl.JoinPath("services", "catalogue")
 
@@ -47,13 +47,10 @@ func FeedUrl(input GetTicketsInput) string {
 		queryParams.Set("q", locationQuery)
 	}
 
-	// var maxTime int64
-	// if input.BeforeTime.IsZero() {
-	// 	maxTime = time.Now().UnixMilli()
-	// } else {
-	// 	maxTime = input.BeforeTime.UnixMilli()
-	// }
-	// queryParams.Set("maxTime", strconv.Itoa(int(maxTime)))
+	if !input.BeforeTime.IsZero() {
+		maxTime := input.BeforeTime.UnixMilli()
+		queryParams.Set("maxTime", strconv.Itoa(int(maxTime)))
+	}
 
 	if input.MaxNumber > 0 {
 		count := strconv.Itoa(input.MaxNumber)

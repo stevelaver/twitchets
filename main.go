@@ -3,17 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"log/slog"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
-	"github.com/lithammer/fuzzysearch/fuzzy"
-	"github.com/samber/lo"
+	"github.com/joho/godotenv"
 )
 
+const maxNumTickets = 10
+
 var (
-	lastCheckTime       = time.Time{}
+	// Config variables
+	countryCode         = "GB"
+	regionCodes         = []string{"GBLO"}
 	monitoredEventNames = []string{
 		// Theatre
 		"Back to the Future",
@@ -33,80 +38,129 @@ var (
 		"Coldplay",
 		"Taylor Swift",
 	}
+
+	// Package variables
+	lastCheckTime = time.Time{}
+	country       twickets.Country
+	regions       []twickets.Region
 )
 
+func init() {
+	godotenv.Load()
+}
+
 func main() {
+	country := twickets.Countries.Parse(countryCode)
+	if country == nil {
+		log.Fatalf("'%s' is not a valid country code", country)
+	}
+
+	regions = make([]twickets.Region, 0, len(regionCodes))
+	for _, regionCode := range regionCodes {
+		region := twickets.Regions.Parse(regionCode)
+		if region == nil {
+			log.Fatalf("'%s' is not a valid region code", region)
+		}
+	}
+
+	twicketsClient := twickets.NewClient(nil)
+	notificationClient := getNotificationClient()
+
 	slog.Info(
 		fmt.Sprintf("Monitoring: %s", strings.Join(monitoredEventNames, ", ")),
 	)
 
 	// Initial execution
-	fetchAndProcessTickets()
+	fetchAndProcessTickets(twicketsClient, notificationClient)
 
+	// Create ticker
 	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
 
-	exitChan := make(chan struct{})
-
 	// Loop until exit
+	exitChan := make(chan struct{})
 	for {
 		select {
 		case <-ticker.C:
-			fetchAndProcessTickets()
+			fetchAndProcessTickets(twicketsClient, notificationClient)
 		case <-exitChan:
 			return
 		}
 	}
 }
 
-func fetchAndProcessTickets() {
+func fetchAndProcessTickets(
+	twicketsClient *twickets.Client,
+	notificationClient twickets.NotificationClient,
+) {
 	checkTime := time.Now()
+	defer func() { lastCheckTime = checkTime }()
 
-	tickets, err := twickets.FetchLatestTickets(
+	tickets, err := twicketsClient.FetchLatestTickets(
 		context.Background(),
-		twickets.GetTicketsInput{
-			Country: twickets.CountryUnitedKingdom,
-			// Regions:    []twickets.Region{twickets.RegionLondon},
-			MaxNumber:  10,
+		twickets.FetchTicketsInput{
+			Country:    country,
+			Regions:    regions,
+			MaxNumber:  maxNumTickets,
 			BeforeTime: checkTime,
 		},
 	)
 	if err != nil {
-		slog.Error(err.Error())
-		return
+		// If there is an error, try again with a no input struct
+		// Twickets api has been known to fail with other query params outside the defaults
+		tickets, err = twicketsClient.FetchLatestTickets(
+			context.Background(),
+			twickets.DefaultFetchTicketsInput(country),
+		)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
 	}
 
-	processTickets(tickets)
-	lastCheckTime = checkTime
+	filteredTickets := twickets.FilterTickets(
+		tickets,
+		twickets.TicketFilter{
+			EventNames:   monitoredEventNames,
+			CreatedAfter: lastCheckTime,
+		},
+	)
+
+	for _, ticket := range filteredTickets {
+
+		slog.Info(
+			"Found tickets for monitored event",
+			"name", ticket.Event.Name,
+			"tickets", ticket.TicketQuantity,
+			"ticketCost", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity),
+			"totalCost", ticket.TotalSellingPrice.String(),
+		)
+
+		err := notificationClient.SendTicketNotification(ticket)
+		if err != nil {
+			slog.Error(
+				"Failed to send notification",
+				"err", err,
+			)
+		}
+	}
 }
 
-func processTickets(tickets []twickets.Ticket) {
-	for _, ticket := range lo.Reverse(tickets) {
-		if ticket.CreatedAt.Before(lastCheckTime) {
-			continue
-		}
-
-		for _, eventName := range monitoredEventNames {
-			isMonitored := fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) ||
-				fuzzy.MatchNormalizedFold(ticket.Event.Name, eventName)
-
-			if isMonitored {
-				slog.Info(
-					"Found tickets for monitored event",
-					"name", ticket.Event.Name,
-					"tickets", ticket.TicketQuantity,
-					"ticketCost", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity),
-					"totalCost", ticket.TotalSellingPrice.String(),
-				)
-
-				err := twickets.SendTicketNotification(ticket)
-				if err != nil {
-					slog.Error(
-						"Failed to send notification",
-						"err", err,
-					)
-				}
-			}
-		}
+func getNotificationClient() twickets.NotificationClient {
+	gotifyUrl := os.Getenv("GOTIFY_URL")
+	if gotifyUrl == "" {
+		log.Fatal("GOTIFY_URL is not set")
 	}
+
+	gotifyToken := os.Getenv("GOTIFY_TOKEN")
+	if gotifyToken == "" {
+		log.Fatal("GOTIFY_TOKEN is not set")
+	}
+
+	client, err := twickets.NewGotifyClient(gotifyUrl, gotifyToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return client
 }

@@ -2,10 +2,14 @@ package twickets // nolint
 
 import (
 	"encoding/json"
+	"fmt"
+	"time"
+
+	"github.com/lithammer/fuzzysearch/fuzzy"
+	"github.com/samber/lo"
 )
 
 type Ticket struct {
-	// Buy Link: https://www.twickets.live/app/block/<ticketId>,<quanitity>
 	Id string `json:"blockId"`
 
 	CreatedAt UnixTime `json:"created"`
@@ -24,6 +28,11 @@ type Ticket struct {
 
 	Event Event `json:"event"`
 	Tour  Tour  `json:"tour"`
+}
+
+func (t Ticket) Link() string {
+	// Link: https://www.twickets.live/app/block/<ticketId>,<quanitity>
+	return fmt.Sprintf("https://www.twickets.live/app/block/%s,%d", t.Id, t.TicketQuantity)
 }
 
 type Event struct {
@@ -95,4 +104,27 @@ func UnmarshalTwicketsFeedJson(data []byte) ([]Ticket, error) {
 	}
 
 	return tickets, nil
+}
+
+type TicketFilter struct {
+	EventNames   []string
+	CreatedAfter time.Time
+}
+
+func FilterTickets(tickets []Ticket, filter TicketFilter) []Ticket {
+	filteredTickets := make([]Ticket, 0, len(tickets))
+	for _, ticket := range lo.Reverse(tickets) {
+		if ticket.CreatedAt.Before(filter.CreatedAfter) {
+			continue
+		}
+
+		for _, eventName := range filter.EventNames {
+			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) ||
+				fuzzy.MatchNormalizedFold(ticket.Event.Name, eventName) {
+				filteredTickets = append(filteredTickets, ticket)
+			}
+		}
+	}
+
+	return filteredTickets
 }
