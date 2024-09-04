@@ -16,9 +16,9 @@ type Ticket struct {
 	ExpiresAt UnixTime `json:"expires"`
 
 	TicketQuantity           int   `json:"ticketQuantity"`
-	TotalSellingPrice        Price `json:"totalSellingPrice"`
-	TotalTwicketsFee         Price `json:"totalTwicketsFee"`
-	FaceValuePrice           Price `json:"faceValuePrice"`
+	TicketsPrice             Price `json:"totalSellingPrice"`
+	TwicketsFee              Price `json:"totalTwicketsFee"`
+	OriginalTotalPrice       Price `json:"faceValuePrice"`
 	SellerWillConsiderOffers bool  `json:"sellerWillConsiderOffers"`
 
 	TicketType   string `json:"priceTier"` // Seated, Standing, Box etc.
@@ -34,6 +34,18 @@ func (t Ticket) Link() string {
 	// Link: https://www.twickets.live/app/block/<ticketId>,<quanitity>
 	return fmt.Sprintf("https://www.twickets.live/app/block/%s,%d", t.Id, t.TicketQuantity)
 }
+
+// TotalPrice is total price of all tickets.
+// This the tickets price plus the twickets fee.
+func (t Ticket) TotalPrice() Price { return t.TicketsPrice.Add(t.TwicketsFee) }
+
+// TotalTicketPrice is total price of a single ticket.
+// This the tickets price plus the twickets fee divided by the number of tickets.
+func (t Ticket) TotalTicketPrice() Price { return t.TotalPrice().Divide(t.TicketQuantity) }
+
+// OriginalTicketsPrice is original price of a single ticket.
+// This the original tickets price divided by the number of tickets.
+func (t Ticket) OriginalTicketPrice() Price { return t.OriginalTotalPrice.Divide(t.TicketQuantity) }
 
 type Event struct {
 	ID       string `json:"id"`

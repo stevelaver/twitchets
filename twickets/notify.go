@@ -24,28 +24,13 @@ func notificationMessage(ticket Ticket) string {
 			ticket.Event.Time.Format("3:04pm"),
 			ticket.Event.Date.Format("Monday 2 January 2006"),
 		),
-		fmt.Sprintf(
-			"%d ticket(s)",
-			ticket.TicketQuantity,
-		),
+		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
 		"",
-		fmt.Sprintf(
-			"Ticket Price: %s",
-			ticket.TotalSellingPrice.Add(ticket.TotalTwicketsFee).Divide(ticket.TicketQuantity).String(),
-		),
-		fmt.Sprintf(
-			"Original Ticket Price: %s",
-			ticket.FaceValuePrice.Divide(ticket.TicketQuantity).String(),
-		),
+		fmt.Sprintf("Ticket Price: %s", ticket.TotalTicketPrice().String()),
+		fmt.Sprintf("Original Ticket Price: %s", ticket.OriginalTicketPrice().String()),
 		"",
-		fmt.Sprintf(
-			"Total Price: %s",
-			ticket.TotalSellingPrice.Add(ticket.TotalTwicketsFee).String(),
-		),
-		fmt.Sprintf(
-			"Original Total Price: %s",
-			ticket.FaceValuePrice.String(),
-		),
+		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
+		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
 	}
 
 	return strings.Join(lines, "\n")

@@ -144,9 +144,9 @@ func fetchAndProcessTickets(
 		slog.Info(
 			"Found tickets for monitored event",
 			"name", ticket.Event.Name,
-			"tickets", ticket.TicketQuantity,
-			"ticketPrice", ticket.TotalSellingPrice.Add(ticket.TotalTwicketsFee).Divide(ticket.TicketQuantity),
-			"originalTicketPrice", ticket.FaceValuePrice.Divide(ticket.TicketQuantity).String(),
+			"numTickets", ticket.TicketQuantity,
+			"ticketPrice", ticket.TotalTicketPrice().String(),
+			"originalTicketPrice", ticket.OriginalTicketPrice().String(),
 			"link", ticket.Link(),
 		)
 
