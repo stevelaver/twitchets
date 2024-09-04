@@ -3,6 +3,7 @@ package twickets
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/orsinium-labs/enum"
@@ -61,11 +62,51 @@ func (p *Price) String() string {
 	return priceString(p.Number(), p.Currency)
 }
 
-func (p *Price) PerString(quantity int) string {
+// Add price. Currency will be kept.
+// Returns a new price.
+func (p *Price) Add(other Price) *Price {
 	if p == nil {
-		return ""
+		return nil
 	}
-	return priceString(p.Number()/float64(quantity), p.Currency)
+	return &Price{
+		Currency: p.Currency,
+		Amount:   p.Amount + other.Amount,
+	}
+}
+
+// Subtract price. Currency will be kept.
+// Returns a new price.
+func (p *Price) Subtract(other Price) *Price {
+	if p == nil {
+		return nil
+	}
+	return &Price{
+		Currency: p.Currency,
+		Amount:   p.Amount - other.Amount,
+	}
+}
+
+// Multiply price. Returns a new price.
+func (p *Price) Multiply(num int) *Price {
+	if p == nil {
+		return nil
+	}
+	return &Price{
+		Currency: p.Currency,
+		Amount:   p.Amount * num,
+	}
+}
+
+// Divide price. Currency will be kept.
+// Returns a new price.
+func (p *Price) Divide(num int) *Price {
+	if p == nil {
+		return nil
+	}
+	return &Price{
+		Currency: p.Currency,
+		Amount:   int(math.Round(float64(p.Amount) / float64(num))),
+	}
 }
 
 func priceString(cost float64, currency Currency) string {

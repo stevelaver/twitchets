@@ -145,8 +145,9 @@ func fetchAndProcessTickets(
 			"Found tickets for monitored event",
 			"name", ticket.Event.Name,
 			"tickets", ticket.TicketQuantity,
-			"ticketCost", ticket.TotalSellingPrice.PerString(ticket.TicketQuantity),
-			"totalCost", ticket.TotalSellingPrice.String(),
+			"ticketPrice", ticket.TotalSellingPrice.Add(ticket.TotalTwicketsFee).Divide(ticket.TicketQuantity),
+			"originalTicketPrice", ticket.FaceValuePrice.Divide(ticket.TicketQuantity).String(),
+			"link", ticket.Link(),
 		)
 
 		err := notificationClient.SendTicketNotification(ticket)
