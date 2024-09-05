@@ -23,6 +23,7 @@ var (
 		// Theatre
 		"Back to the Future",
 		"Frozen",
+		"Hadestown",
 		"Hamilton",
 		"Harry Potter & the Cursed Child",
 		"Kiss Me Kate",
@@ -30,12 +31,18 @@ var (
 		"Matilda",
 		"Mean Girls",
 		"Moulin Rouge",
+		"My Neighbour Totoro",
+		"Operation Mincemeat",
 		"Starlight Express",
 		"Stranger Things",
 		"The Phantom Opera",
 		"The Wizard of Oz",
 		// Gigs
 		"Coldplay",
+		"Gary Clark Jr.",
+		"Glass Animals",
+		"Jungle",
+		"Oasis",
 		"Taylor Swift",
 	}
 
@@ -60,17 +67,19 @@ func main() {
 		log.Fatal("GOTIFY_TOKEN is not set")
 	}
 
-	country := twickets.Countries.Parse(countryCode)
-	if country == nil {
-		log.Fatalf("'%s' is not a valid country code", country)
+	parsedCountryCode := twickets.Countries.Parse(countryCode)
+	if parsedCountryCode == nil {
+		log.Fatalf("'%s' is not a valid country code", parsedCountryCode)
 	}
+	country = *parsedCountryCode
 
 	regions = make([]twickets.Region, 0, len(regionCodes))
 	for _, regionCode := range regionCodes {
-		region := twickets.Regions.Parse(regionCode)
-		if region == nil {
-			log.Fatalf("'%s' is not a valid region code", region)
+		parsedRegionCode := twickets.Regions.Parse(regionCode)
+		if parsedRegionCode == nil {
+			log.Fatalf("'%s' is not a valid region code", parsedRegionCode)
 		}
+		regions = append(regions, *parsedRegionCode)
 	}
 
 	notificationClient, err := twickets.NewGotifyClient(gotifyUrl, gotifyToken)
