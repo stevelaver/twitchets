@@ -19,7 +19,6 @@ func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // n
 			ticket.Event.Date.Format("Monday 2 January 2006"),
 		),
 		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
-		"",
 		fmt.Sprintf("Ticket Price: %s", ticket.TotalTicketPrice().String()),
 		fmt.Sprintf("Original Ticket Price: %s", ticket.OriginalTicketPrice().String()),
 		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
