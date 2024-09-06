@@ -30,7 +30,7 @@ func DefaultFetchTicketsInput(country Country) FetchTicketsInput {
 
 // FetchLatestTickets gets latest listed tickets in a country and region(s) since the
 // up to a maximum limit, before any specified time (defaults to now)
-func (c *Client) FetchLatestTickets(ctx context.Context, input FetchTicketsInput) ([]Ticket, error) {
+func (c *Client) FetchLatestTickets(ctx context.Context, input FetchTicketsInput) (Tickets, error) {
 	feedUrl := FeedUrl(input)
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, feedUrl, http.NoBody)
 	if err != nil {

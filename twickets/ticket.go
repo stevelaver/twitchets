@@ -118,14 +118,28 @@ func UnmarshalTwicketsFeedJson(data []byte) ([]Ticket, error) {
 	return tickets, nil
 }
 
+type Tickets []Ticket
+
+// GetById gets the first ticket with a matching id,
+// or return nil if it does not exist.
+func (t Tickets) GetById(id string) *Ticket {
+	for _, ticket := range t {
+		if ticket.Id == id {
+			return &ticket
+		}
+	}
+	return nil
+}
+
 type TicketFilter struct {
 	EventNames   []string
 	CreatedAfter time.Time
 }
 
-func FilterTickets(tickets []Ticket, filter TicketFilter) []Ticket {
-	filteredTickets := make([]Ticket, 0, len(tickets))
-	for _, ticket := range lo.Reverse(tickets) {
+// Filter filters tickets by a set of conditions
+func (t Tickets) Filter(filter TicketFilter) Tickets {
+	filteredTickets := make([]Ticket, 0, len(t))
+	for _, ticket := range lo.Reverse(t) {
 		if ticket.CreatedAt.Before(filter.CreatedAfter) {
 			continue
 		}

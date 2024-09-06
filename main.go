@@ -48,9 +48,10 @@ var (
 	}
 
 	// Package variables
-	lastCheckTime = time.Time{}
-	country       twickets.Country
-	regions       []twickets.Region
+	country        twickets.Country
+	regions        []twickets.Region
+	lastCheckTime  = time.Time{}
+	newestTicketId string
 )
 
 func init() {
@@ -142,8 +143,14 @@ func fetchAndProcessTickets(
 		}
 	}
 
-	filteredTickets := twickets.FilterTickets(
-		tickets,
+	if tickets.GetById(newestTicketId) == nil {
+		slog.Warn(
+			"Newest ticket previously fetched is not in newly fetched tickets. " +
+				"It is likely tickets have been missed.",
+		)
+	}
+
+	filteredTickets := tickets.Filter(
 		twickets.TicketFilter{
 			EventNames:   monitoredEventNames,
 			CreatedAfter: lastCheckTime,
