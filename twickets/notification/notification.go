@@ -22,7 +22,6 @@ func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // n
 		"",
 		fmt.Sprintf("Ticket Price: %s", ticket.TotalTicketPrice().String()),
 		fmt.Sprintf("Original Ticket Price: %s", ticket.OriginalTicketPrice().String()),
-		"",
 		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
 		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
 	}
@@ -33,5 +32,5 @@ func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // n
 		)
 	}
 
-	return strings.Join(lines, "\n")
+	return strings.Join(lines, "\n\n")
 }
