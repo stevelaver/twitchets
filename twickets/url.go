@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/ahobsonsayers/twitchets/twickets/utils"
 )
 
 const (
@@ -27,7 +29,7 @@ func init() {
 // TicketURL gets a ticket url
 // https://www.twickets.live/app/block/<ticketId>,<numTickets>
 func TicketURL(ticketId string, numTickets int) string {
-	ticketUrl := cloneURL(twicketsUrl)
+	ticketUrl := utils.CloneURL(twicketsUrl)
 	ticketUrl = ticketUrl.JoinPath("app", "block", fmt.Sprintf("%s,%d", ticketId, numTickets))
 	return ticketUrl.String()
 }
@@ -35,7 +37,7 @@ func TicketURL(ticketId string, numTickets int) string {
 // FeedUrl gets the feel url. By default gets the last minute of tickets up to a maximum of 100.
 // https://www.twickets.live/services/catalogue?api_key=83d6ec0c-54bb-4da3-b2a1-f3cb47b984f1&count=100&q=countryCode=GB
 func FeedUrl(input FetchTicketsInput) string {
-	feedUrl := cloneURL(twicketsUrl)
+	feedUrl := utils.CloneURL(twicketsUrl)
 	feedUrl = feedUrl.JoinPath("services", "catalogue")
 
 	// Set query params
@@ -85,19 +87,4 @@ func apiLocationQuery(country Country, regions ...Region) string {
 	}
 
 	return strings.Join(queryParts, ",")
-}
-
-// cloneURL clones a url. Copied directly from net/http internals
-// See: https://github.com/golang/go/blob/go1.19/src/net/http/clone.go#L22
-func cloneURL(u *url.URL) *url.URL {
-	if u == nil {
-		return nil
-	}
-	u2 := new(url.URL)
-	*u2 = *u
-	if u.User != nil {
-		u2.User = new(url.Userinfo)
-		*u2.User = *u.User
-	}
-	return u2
 }
