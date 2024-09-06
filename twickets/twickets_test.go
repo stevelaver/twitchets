@@ -4,18 +4,19 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetLatestTickets(t *testing.T) {
-	t.Skip("Does not work in CI")
+	// t.Skip("Does not work in CI")
 
-	// client, err := testutils.NewProxyClient(testutils.ProxyListURL)
-	// require.NoError(t, err)
+	httpClient, err := testutils.NewProxyClient(testutils.RoosterKidProxyListURL)
+	require.NoError(t, err)
 
-	client := twickets.NewClient(nil)
-	tickets, err := client.FetchLatestTickets(
+	twicketsClient := twickets.NewClient(httpClient)
+	tickets, err := twicketsClient.FetchLatestTickets(
 		context.Background(),
 		twickets.DefaultFetchTicketsInput(twickets.CountryUnitedKingdom),
 	)

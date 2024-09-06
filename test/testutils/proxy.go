@@ -2,6 +2,8 @@ package testutils
 
 import (
 	"bufio"
+	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -9,9 +11,13 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
-const ProxyListURL = "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt"
+const (
+	RoosterKidProxyListURL = "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt"
+	ProxlifyProxyListURL   = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt" // nolint: revive
+)
 
 func NewProxyClient(proxyListUrl string) (*http.Client, error) {
 	proxyTransport, err := newProxyTransport(proxyListUrl)
@@ -26,6 +32,11 @@ func newProxyTransport(proxyListUrl string) (http.RoundTripper, error) {
 	proxyList, err := downloadProxyList(proxyListUrl)
 	if err != nil {
 		return nil, fmt.Errorf("error downloading proxy list: %w", err)
+	}
+
+	proxyList = getWorkingProxies(proxyList, time.Second)
+	if len(proxyList) == 0 {
+		return nil, errors.New("none of the proxies in the proxy list are working")
 	}
 
 	startingIndex := rand.Intn(len(proxyList))
@@ -89,4 +100,47 @@ func parseProxyList(reader io.Reader) ([]*url.URL, error) {
 	}
 
 	return proxyUrls, nil
+}
+
+func getWorkingProxies(proxyUrls []*url.URL, timeout time.Duration) []*url.URL {
+	resultsChan := make(chan *url.URL, len(proxyUrls))
+
+	var wg sync.WaitGroup
+	for _, proxyUrl := range proxyUrls {
+		wg.Add(1)
+		go func(proxyUrl *url.URL) {
+			defer wg.Done()
+			ok := checkProxy(proxyUrl, timeout)
+			if ok {
+				resultsChan <- proxyUrl
+			}
+		}(proxyUrl)
+	}
+
+	wg.Wait()
+	close(resultsChan)
+
+	results := make([]*url.URL, 0, len(proxyUrls))
+	for result := range resultsChan {
+		results = append(results, result)
+	}
+
+	return results
+}
+
+func checkProxy(proxyUrl *url.URL, timeout time.Duration) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, proxyUrl.String(), http.NoBody)
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := http.DefaultClient.Do(request)
+	if err != nil || response.StatusCode >= 400 {
+		return false
+	}
+
+	return true
 }
