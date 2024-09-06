@@ -12,10 +12,8 @@ import (
 )
 
 func TestNtfySendTicketMessage(t *testing.T) {
-	// t.Skip("No env set in CI. Fix")
-
+	t.Skip("No env set in CI. Fix")
 	log.SetLevel(log.DebugLevel)
-
 	_ = godotenv.Load("../../.env")
 
 	ntfyUrl := os.Getenv("NTFY_URL")
