@@ -34,7 +34,7 @@ func newProxyTransport(proxyListUrl string) (http.RoundTripper, error) {
 		return nil, fmt.Errorf("error downloading proxy list: %w", err)
 	}
 
-	proxyList = getWorkingProxies(proxyList, time.Second)
+	proxyList = getWorkingProxies(proxyList, 2*time.Second)
 	if len(proxyList) == 0 {
 		return nil, errors.New("none of the proxies in the proxy list are working")
 	}
@@ -132,12 +132,22 @@ func checkProxy(proxyUrl *url.URL, timeout time.Duration) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, proxyUrl.String(), http.NoBody)
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxyUrl),
+		},
+	}
+
+	request, err := http.NewRequestWithContext(
+		ctx, http.MethodGet,
+		"https://example.com",
+		http.NoBody,
+	)
 	if err != nil {
 		panic(err)
 	}
 
-	response, err := http.DefaultClient.Do(request)
+	response, err := client.Do(request)
 	if err != nil || response.StatusCode >= 400 {
 		return false
 	}
