@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/joho/godotenv"
 )
 
@@ -82,7 +83,7 @@ func main() {
 		regions = append(regions, *parsedRegionCode)
 	}
 
-	notificationClient, err := twickets.NewGotifyClient(gotifyUrl, gotifyToken)
+	notificationClient, err := notification.NewGotifyClient(gotifyUrl, gotifyToken)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -114,7 +115,7 @@ func main() {
 
 func fetchAndProcessTickets(
 	twicketsClient *twickets.Client,
-	notificationClient twickets.NotificationClient,
+	notificationClient notification.Client,
 ) {
 	checkTime := time.Now()
 	defer func() { lastCheckTime = checkTime }()

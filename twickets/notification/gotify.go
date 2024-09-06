@@ -1,11 +1,11 @@
-package twickets
+package notification
 
 import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
+	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/gotify/go-api-client/v2/auth"
 	"github.com/gotify/go-api-client/v2/client"
 	"github.com/gotify/go-api-client/v2/client/message"
@@ -13,51 +13,26 @@ import (
 	"github.com/gotify/go-api-client/v2/models"
 )
 
-type NotificationClient interface {
-	SendTicketNotification(Ticket) error
-}
-
-func notificationMessage(ticket Ticket) string {
-	lines := []string{
-		fmt.Sprintf(
-			"%s %s",
-			ticket.Event.Time.Format("3:04pm"),
-			ticket.Event.Date.Format("Monday 2 January 2006"),
-		),
-		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
-		"",
-		fmt.Sprintf("Ticket Price: %s", ticket.TotalTicketPrice().String()),
-		fmt.Sprintf("Original Ticket Price: %s", ticket.OriginalTicketPrice().String()),
-		"",
-		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
-		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
-	}
-
-	return strings.Join(lines, "\n")
-}
-
 type GotifyClient struct {
 	url    *url.URL
 	token  string
 	client *client.GotifyREST
 }
 
-var _ NotificationClient = GotifyClient{}
+var _ Client = GotifyClient{}
 
-func (g GotifyClient) SendTicketNotification(ticket Ticket) error {
+func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
 	params := message.NewCreateMessageParams()
 	params.Body = &models.MessageExternal{
 		Title:   ticket.Event.Name,
 		Message: notificationMessage(ticket),
 		Extras: map[string]any{
-			"extras": map[string]any{
-				"client::display": map[string]any{
-					"contentType": "text/markdown",
-				},
-				"client::notification": map[string]any{
-					"click": map[string]any{
-						"url": ticket.Link(),
-					},
+			"client::display": map[string]any{
+				"contentType": "text/markdown",
+			},
+			"client::notification": map[string]any{
+				"click": map[string]any{
+					"url": ticket.Link(),
 				},
 			},
 		},
