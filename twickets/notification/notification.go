@@ -26,7 +26,7 @@ func notificationMessage(ticket twickets.Ticket) string {
 		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
 		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
 		"",
-		fmt.Sprintf("[Link](%s)", ticket.Link()),
+		fmt.Sprintf("[Buy](%s)", ticket.Link()),
 	}
 
 	return strings.Join(lines, "\n")
