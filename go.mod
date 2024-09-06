@@ -9,13 +9,16 @@ require (
 	github.com/orsinium-labs/enum v1.4.0
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.9.0
+	heckel.io/ntfy v1.31.0
 )
 
 require (
+	github.com/AlekSi/pointer v1.2.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.0 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.1 // indirect
 	github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb // indirect
 	github.com/go-openapi/analysis v0.17.0 // indirect
 	github.com/go-openapi/errors v0.17.2 // indirect
@@ -29,9 +32,14 @@ require (
 	github.com/go-openapi/validate v0.17.0 // indirect
 	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
+	github.com/olebedev/when v0.0.0-20221205223600-4d190b02b8d8 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/term v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
-	gopkg.in/yaml.v2 v2.2.1 // indirect
+	golang.org/x/time v0.3.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

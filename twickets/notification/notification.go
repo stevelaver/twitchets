@@ -11,7 +11,7 @@ type Client interface {
 	SendTicketNotification(twickets.Ticket) error
 }
 
-func notificationMessage(ticket twickets.Ticket) string {
+func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // nolint: revive
 	lines := []string{
 		fmt.Sprintf(
 			"%s %s",
@@ -25,8 +25,12 @@ func notificationMessage(ticket twickets.Ticket) string {
 		"",
 		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
 		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
-		"",
-		fmt.Sprintf("[Buy](%s)", ticket.Link()),
+	}
+	if includeLink {
+		lines = append(lines,
+			"",
+			fmt.Sprintf("[Buy](%s)", ticket.Link()),
+		)
 	}
 
 	return strings.Join(lines, "\n")

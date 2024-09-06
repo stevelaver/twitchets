@@ -14,8 +14,9 @@ import (
 )
 
 type GotifyClient struct {
-	url    *url.URL
-	token  string
+	url   *url.URL
+	token string
+
 	client *client.GotifyREST
 }
 
@@ -25,7 +26,7 @@ func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
 	params := message.NewCreateMessageParams()
 	params.Body = &models.MessageExternal{
 		Title:   ticket.Event.Name,
-		Message: notificationMessage(ticket),
+		Message: notificationMessage(ticket, true),
 		Extras: map[string]any{
 			"client::display": map[string]any{
 				"contentType": "text/markdown",
