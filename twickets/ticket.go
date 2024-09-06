@@ -48,7 +48,7 @@ func (t Ticket) TotalTicketPrice() Price { return t.TotalPrice().Divide(t.Ticket
 func (t Ticket) OriginalTicketPrice() Price { return t.OriginalTotalPrice.Divide(t.TicketQuantity) }
 
 type Event struct {
-	ID       string `json:"id"`
+	Id       string `json:"id"`
 	Name     string `json:"eventName"`
 	Category string `json:"category"`
 	Date     Date   `json:"date"`
