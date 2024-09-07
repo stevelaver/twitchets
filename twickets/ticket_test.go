@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUnmarshalFeedJson(t *testing.T) {
+func getTestTickets(t *testing.T) twickets.Tickets {
 	projectDirectory := testutils.GetProjectDirectory(t)
 	feedJsonFilePath := filepath.Join(projectDirectory, "test", "assets", "feed.json")
 
@@ -22,6 +22,12 @@ func TestUnmarshalFeedJson(t *testing.T) {
 
 	tickets, err := twickets.UnmarshalTwicketsFeedJson(feedJson)
 	require.NoError(t, err)
+
+	return tickets
+}
+
+func TestUnmarshalFeedJson(t *testing.T) {
+	tickets := getTestTickets(t)
 
 	require.Len(t, tickets, 4)
 
@@ -63,4 +69,10 @@ func TestUnmarshalFeedJson(t *testing.T) {
 	require.Equal(t, "£280.00", tickets[3].TicketsPrice.String())
 	require.Equal(t, "£30.80", tickets[3].TwicketsFee.String())
 	require.Equal(t, "£322.00", tickets[3].OriginalTotalPrice.String())
+}
+
+func TestGetEventById(t *testing.T) {
+	tickets := getTestTickets(t)
+	ticket := tickets.GetById("156783487261837")
+	require.NotNil(t, ticket)
 }

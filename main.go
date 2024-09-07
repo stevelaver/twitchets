@@ -119,7 +119,9 @@ func fetchAndProcessTickets(
 	notificationClient notification.Client,
 ) {
 	checkTime := time.Now()
-	defer func() { lastCheckTime = checkTime }()
+	defer func() {
+		lastCheckTime = checkTime
+	}()
 
 	tickets, err := twicketsClient.FetchLatestTickets(
 		context.Background(),
@@ -142,8 +144,11 @@ func fetchAndProcessTickets(
 			return
 		}
 	}
+	defer func() {
+		newestTicketId = tickets[0].Id
+	}()
 
-	if tickets.GetById(newestTicketId) == nil {
+	if newestTicketId != "" && tickets.GetById(newestTicketId) == nil {
 		slog.Warn(
 			"Newest ticket previously fetched is not in newly fetched tickets. " +
 				"It is likely tickets have been missed.",
