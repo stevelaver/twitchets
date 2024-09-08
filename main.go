@@ -53,10 +53,9 @@ var (
 	}
 
 	// Package variables
-	country        twickets.Country
-	regions        []twickets.Region
-	lastCheckTime  = time.Now()
-	newestTicketId string
+	country       twickets.Country
+	regions       []twickets.Region
+	lastCheckTime = time.Now()
 )
 
 func init() {
