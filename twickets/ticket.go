@@ -162,16 +162,25 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 	if !filter.CreatedAfter.IsZero() {
 		filteredTickets = filteredTickets.ticketsCreatedAfterTime(filter.CreatedAfter)
 	}
+	if len(filter.EventNames) != 0 {
+		filteredTickets = filteredTickets.ticketsMatchingEvents(filter.EventNames)
+	}
 
+	return filteredTickets
+}
+
+// ticketsMatchingEvent will return the tickets that match any of the specified events.
+func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
+	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range lo.Reverse(t) {
-		for _, eventName := range filter.EventNames {
+		for _, eventName := range eventNames {
 			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) {
-				filteredTickets = append(filteredTickets, ticket)
+				tickets = append(tickets, ticket)
 			}
 		}
 	}
 
-	return filteredTickets
+	return tickets
 }
 
 // ticketsCreatedBeforeTime will return the tickets created before a specified time.
