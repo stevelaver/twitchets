@@ -13,8 +13,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const maxNumTickets = 10
-
 var (
 	// Config variables
 	// NOTE:
