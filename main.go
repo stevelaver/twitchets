@@ -18,8 +18,11 @@ const maxNumTickets = 10
 
 var (
 	// Config variables
+	// NOTE:
+	// Region coeds are currently ignored due to
+	// issues with the twickets filter api
 	countryCode         = "GB"
-	regionCodes         = []string{"GBLO"}
+	regionCodes         = []string{"GBLO"} // TODO reenable. See note in config variables.
 	monitoredEventNames = []string{
 		// Theatre
 		"Back to the Future",
@@ -123,26 +126,16 @@ func fetchAndProcessTickets(
 		lastCheckTime = checkTime
 	}()
 
-	tickets, err := twicketsClient.FetchLatestTickets(
+	tickets, err := twicketsClient.FetchTickets(
 		context.Background(),
 		twickets.FetchTicketsInput{
-			Country:    country,
-			Regions:    regions,
-			MaxNumber:  maxNumTickets,
-			BeforeTime: checkTime,
+			Country: country,
+			// Regions:    regions, // TODO reenable. See note in config variables.
 		},
 	)
 	if err != nil {
-		// If there is an error, try again with a no input struct
-		// Twickets api has been known to fail with other query params outside the defaults
-		tickets, err = twicketsClient.FetchLatestTickets(
-			context.Background(),
-			twickets.DefaultFetchTicketsInput(country),
-		)
-		if err != nil {
-			slog.Error(err.Error())
-			return
-		}
+		slog.Error(err.Error())
+		return
 	}
 	defer func() {
 		newestTicketId = tickets[0].Id
@@ -150,7 +143,7 @@ func fetchAndProcessTickets(
 
 	if newestTicketId != "" && tickets.GetById(newestTicketId) == nil {
 		slog.Warn(
-			"Newest ticket previously fetched is not in newly fetched tickets. " +
+			"Newest ticket previously fetched is not in the newly fetched tickets. " +
 				"It is likely tickets have been missed.",
 		)
 	}

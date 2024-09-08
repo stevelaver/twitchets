@@ -16,9 +16,11 @@ func TestGetLatestTickets(t *testing.T) {
 	require.NoError(t, err)
 
 	twicketsClient := twickets.NewClient(httpClient)
-	tickets, err := twicketsClient.FetchLatestTickets(
+	tickets, err := twicketsClient.FetchTickets(
 		context.Background(),
-		twickets.DefaultFetchTicketsInput(twickets.CountryUnitedKingdom),
+		twickets.FetchTicketsInput{
+			Country: twickets.CountryUnitedKingdom,
+		},
 	)
 	require.NoError(t, err)
 	require.Len(t, tickets, 10)

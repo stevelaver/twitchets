@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ahobsonsayers/twitchets/twickets/utils"
 )
@@ -34,15 +35,25 @@ func TicketURL(ticketId string, numTickets int) string {
 	return ticketUrl.String()
 }
 
-// FeedUrl gets the feel url. By default gets the last minute of tickets up to a maximum of 100.
-// https://www.twickets.live/services/catalogue?api_key=83d6ec0c-54bb-4da3-b2a1-f3cb47b984f1&count=100&q=countryCode=GB
-func FeedUrl(input FetchTicketsInput) string {
+type FeedUrlParams struct {
+	Country Country
+	Regions []Region
+
+	// Number of tickets to fetch in the feed.
+	NumTickets int
+
+	// Time to get tickets before.
+	BeforeTime time.Time
+}
+
+// FeedUrl gets the url of the feed with the given params.
+// E.g. https://www.twickets.live/services/catalogue?q=countryCode=GB&count=100&api_key=<api_key>
+func FeedUrl(input FeedUrlParams) string {
 	feedUrl := utils.CloneURL(twicketsUrl)
 	feedUrl = feedUrl.JoinPath("services", "catalogue")
 
 	// Set query params
 	queryParams := feedUrl.Query()
-	queryParams.Set("api_key", TwicketsAPIKey)
 
 	locationQuery := apiLocationQuery(input.Country, input.Regions...)
 	if locationQuery != "" {
@@ -54,10 +65,12 @@ func FeedUrl(input FetchTicketsInput) string {
 		queryParams.Set("maxTime", strconv.Itoa(int(maxTime)))
 	}
 
-	if input.MaxNumber > 0 {
-		count := strconv.Itoa(input.MaxNumber)
+	if input.NumTickets > 0 {
+		count := strconv.Itoa(input.NumTickets)
 		queryParams.Set("count", count)
 	}
+
+	queryParams.Set("api_key", TwicketsAPIKey)
 
 	// Set query
 	encodedQuery := queryParams.Encode()
