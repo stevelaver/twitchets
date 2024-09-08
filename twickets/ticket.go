@@ -165,8 +165,7 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 
 	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range filter.EventNames {
-			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) ||
-				fuzzy.MatchNormalizedFold(ticket.Event.Name, eventName) {
+			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) {
 				filteredTickets = append(filteredTickets, ticket)
 			}
 		}
