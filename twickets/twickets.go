@@ -2,6 +2,7 @@ package twickets
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,29 +19,44 @@ type FetchTicketsInput struct {
 	Country Country
 	Regions []Region
 
-	// Total number of tickets to fetch.
-	// Defaults to 100 - large numbers
-	// could lead to being rate limited.
-	TotalNumTickets int
-
-	// Number of tickets in fetch in each feed.
-	// Defaults to 10 - other numbers have been known to fail
-	NumTicketsPerFeed int
-
-	// Time to get tickets before.
+	// Time which tickets must have been created before.
 	// Defaults to current time.
-	BeforeTime time.Time
+	CreatedBefore time.Time
+
+	// Time which tickets must have been created after.
+	// Defaults to a minute before the current time.
+	CreatedAfter time.Time
+
+	// Max number of tickets to fetch in the time period.
+	// Set this to an arbitrarily large number to prevent
+	// fetching too many tickets at once and possibly
+	// being rate limited.
+	// Defaults to 250. Usually can be ignored.
+	MaxTickets int
+
+	// Number of tickets to fetch in each request.
+	// Not all tickets are fetched at once - instead
+	// a series of requests are made each fetching the
+	// number of tickets specified here. In theory this
+	// can be arbitrarily large to prevent having to make
+	// too many request, however it has been known that
+	// any other number than 10 can sometimes not work.
+	// Defaults to 10 . Usually can be ignored.
+	NumTicketsPerRequest int
 }
 
 func (f *FetchTicketsInput) applyDefaults() {
-	if f.TotalNumTickets <= 0 {
-		f.TotalNumTickets = 100
+	if f.CreatedBefore.IsZero() {
+		f.CreatedBefore = time.Now()
 	}
-	if f.NumTicketsPerFeed <= 0 {
-		f.NumTicketsPerFeed = 10
+	if f.CreatedAfter.IsZero() {
+		f.CreatedAfter = f.CreatedBefore.Add(-time.Minute)
 	}
-	if f.BeforeTime.IsZero() {
-		f.BeforeTime = time.Now()
+	if f.MaxTickets <= 0 {
+		f.MaxTickets = 250
+	}
+	if f.NumTicketsPerRequest <= 0 {
+		f.NumTicketsPerRequest = 10
 	}
 }
 
@@ -48,16 +64,23 @@ func (f *FetchTicketsInput) applyDefaults() {
 func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tickets, error) {
 	input.applyDefaults()
 
+	if input.Country.Value == "" {
+		return nil, errors.New("country must be set")
+	}
+	if input.CreatedBefore.Before(input.CreatedAfter) {
+		return nil, errors.New("latests time must be after earliest time")
+	}
+
 	// Iterate through feeds until have equal to or more tickets than desired
-	tickets := make(Tickets, 0, input.TotalNumTickets)
-	earliestTime := input.BeforeTime
-	for len(tickets) < input.TotalNumTickets {
+	tickets := make(Tickets, 0, input.MaxTickets)
+	earliestTicketTime := input.CreatedBefore
+	for earliestTicketTime.After(input.CreatedAfter) && len(tickets) < input.MaxTickets {
 
 		feedUrl := FeedUrl(FeedUrlParams{
 			Country:    input.Country,
 			Regions:    input.Regions,
-			NumTickets: input.NumTicketsPerFeed,
-			BeforeTime: earliestTime,
+			NumTickets: input.NumTicketsPerRequest,
+			BeforeTime: earliestTicketTime,
 		})
 
 		feedTickets, err := c.FetchFeedTickets(ctx, feedUrl)
@@ -66,11 +89,13 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 		}
 
 		tickets = append(tickets, feedTickets...)
-		earliestTime = feedTickets[len(feedTickets)-1].CreatedAt.Time
+		earliestTicketTime = feedTickets[len(feedTickets)-1].CreatedAt.Time
 	}
 
-	// Return the exact number of tickets asked for
-	return tickets[:input.TotalNumTickets], nil
+	// Only return tickets created after the earliest time
+	tickets = tickets.ticketsCreatedAfterTime(input.CreatedAfter)
+
+	return tickets, nil
 }
 
 // FetchFeedTickets gets the tickets in the feed url provided.

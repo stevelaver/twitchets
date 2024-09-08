@@ -132,18 +132,23 @@ func (t Tickets) GetById(id string) *Ticket {
 }
 
 type TicketFilter struct {
-	EventNames   []string
-	CreatedAfter time.Time
+	EventNames    []string
+	CreatedBefore time.Time
+	CreatedAfter  time.Time
 }
 
 // Filter filters tickets by a set of conditions
 func (t Tickets) Filter(filter TicketFilter) Tickets {
-	filteredTickets := make([]Ticket, 0, len(t))
-	for _, ticket := range lo.Reverse(t) {
-		if ticket.CreatedAt.Before(filter.CreatedAfter) {
-			continue
-		}
+	filteredTickets := t
 
+	if !filter.CreatedBefore.IsZero() {
+		filteredTickets = filteredTickets.ticketsCreatedBeforeTime(filter.CreatedBefore)
+	}
+	if !filter.CreatedAfter.IsZero() {
+		filteredTickets = filteredTickets.ticketsCreatedAfterTime(filter.CreatedAfter)
+	}
+
+	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range filter.EventNames {
 			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) ||
 				fuzzy.MatchNormalizedFold(ticket.Event.Name, eventName) {
@@ -153,4 +158,36 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 	}
 
 	return filteredTickets
+}
+
+// ticketsCreatedBeforeTime will return the tickets created before a specified time.
+// Passed tickets MUST be ordered by descending time, so recent tickets appear at start.
+func (t Tickets) ticketsCreatedBeforeTime(beforeTime time.Time) Tickets {
+	tickets := make(Tickets, 0, len(t))
+	for _, ticket := range t {
+
+		if ticket.CreatedAt.Time.After(beforeTime) {
+			break
+		}
+
+		tickets = append(tickets, ticket)
+	}
+
+	return tickets
+}
+
+// ticketsCreatedAfterTime will return the tickets created after a specified time.
+// Passed tickets MUST be ordered by descending time, so recent tickets appear at start.
+func (t Tickets) ticketsCreatedAfterTime(afterTime time.Time) Tickets {
+	tickets := make(Tickets, 0, len(t))
+	for _, ticket := range t {
+
+		if ticket.CreatedAt.Time.Before(afterTime) {
+			break
+		}
+
+		tickets = append(tickets, ticket)
+	}
+
+	return tickets
 }

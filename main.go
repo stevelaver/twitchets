@@ -13,6 +13,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const (
+	maxNumTickets = 250
+	refetchTime   = 1 * time.Minute
+)
+
 var (
 	// Config variables
 	// NOTE:
@@ -50,7 +55,7 @@ var (
 	// Package variables
 	country        twickets.Country
 	regions        []twickets.Region
-	lastCheckTime  = time.Time{}
+	lastCheckTime  = time.Now()
 	newestTicketId string
 )
 
@@ -91,7 +96,7 @@ func main() {
 	fetchAndProcessTickets(twicketsClient, notificationClient)
 
 	// Create ticker
-	ticker := time.NewTicker(15 * time.Second)
+	ticker := time.NewTicker(refetchTime)
 	defer ticker.Stop()
 
 	// Loop until exit
@@ -120,27 +125,23 @@ func fetchAndProcessTickets(
 		twickets.FetchTicketsInput{
 			Country: country,
 			// Regions:    regions, // TODO reenable. See note in config variables.
+			CreatedBefore: time.Now(),
+			CreatedAfter:  lastCheckTime,
+			MaxTickets:    maxNumTickets,
 		},
 	)
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
-	defer func() {
-		newestTicketId = tickets[0].Id
-	}()
 
-	if newestTicketId != "" && tickets.GetById(newestTicketId) == nil {
-		slog.Warn(
-			"Newest ticket previously fetched is not in the newly fetched tickets. " +
-				"It is likely tickets have been missed.",
-		)
+	if len(tickets) == maxNumTickets {
+		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
 	filteredTickets := tickets.Filter(
 		twickets.TicketFilter{
-			EventNames:   monitoredEventNames,
-			CreatedAfter: lastCheckTime,
+			EventNames: monitoredEventNames,
 		},
 	)
 
