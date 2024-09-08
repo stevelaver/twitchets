@@ -4,13 +4,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGotifySendTicketMessage(t *testing.T) {
-	t.Skip("No env set in CI. Fix")
+	testutils.SkipIfCI(t, "No env set in CI. Fix")
+
 	_ = godotenv.Load("../../.env")
 
 	gotifyUrl := os.Getenv("GOTIFY_URL")

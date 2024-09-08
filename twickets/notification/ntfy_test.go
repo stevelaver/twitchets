@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/require"
@@ -11,7 +12,8 @@ import (
 )
 
 func TestNtfySendTicketMessage(t *testing.T) {
-	t.Skip("No env set in CI. Fix")
+	testutils.SkipIfCI(t, "No env set in CI. Fix")
+
 	log.SetLevel(log.DebugLevel)
 	_ = godotenv.Load("../../.env")
 
