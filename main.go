@@ -91,7 +91,7 @@ func main() {
 	fetchAndProcessTickets(twicketsClient, notificationClient)
 
 	// Create ticker
-	ticker := time.NewTicker(15 * time.Second)
+	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 
 	// Loop until exit
