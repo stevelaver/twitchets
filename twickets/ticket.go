@@ -3,6 +3,7 @@ package twickets // nolint
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/lithammer/fuzzysearch/fuzzy"
@@ -46,6 +47,20 @@ func (t Ticket) TotalTicketPrice() Price { return t.TotalPrice().Divide(t.Ticket
 // OriginalTicketsPrice is original price of a single ticket.
 // This the original tickets price divided by the number of tickets.
 func (t Ticket) OriginalTicketPrice() Price { return t.OriginalTotalPrice.Divide(t.TicketQuantity) }
+
+// Discount is the price discount as a percentage
+func (t Ticket) Discount() float64 {
+	discount := (1 - t.OriginalTotalPrice.Number()/t.OriginalTotalPrice.Number()) * 100
+	if discount < 0 {
+		return 0
+	}
+	return discount
+}
+
+func (t Ticket) DiscountString() string {
+	discountString := strconv.FormatFloat(t.Discount(), 'f', 2, 64)
+	return discountString + "%"
+}
 
 type Event struct {
 	Id       string `json:"id"`
