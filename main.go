@@ -80,7 +80,7 @@ func main() {
 	twicketsClient := twickets.NewClient(nil)
 
 	// Notification Client
-	notificationClient, err := notification.NewGotifyClientFromEnv()
+	notificationClient, err := notification.NewNtfyClientFromEnv()
 	if err != nil {
 		log.Fatal(err)
 	}
