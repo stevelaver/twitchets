@@ -7,6 +7,12 @@ func testNotificationTicket() twickets.Ticket {
 		Id: "test",
 		Event: twickets.Event{
 			Name: "Test Event",
+			Venue: twickets.Venue{
+				Name: "Test Venue",
+				Location: twickets.Location{
+					Name: "Test Location",
+				},
+			},
 		},
 		TicketQuantity: 2,
 		TicketsPrice: twickets.Price{

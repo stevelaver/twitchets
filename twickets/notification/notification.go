@@ -14,6 +14,11 @@ type Client interface {
 func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // nolint: revive
 	lines := []string{
 		fmt.Sprintf(
+			"%s, %s",
+			ticket.Event.Venue.Name,
+			ticket.Event.Venue.Location.Name,
+		),
+		fmt.Sprintf(
 			"%s %s",
 			ticket.Event.Date.Format("Monday 2 January 2006"),
 			ticket.Event.Time.Format("3:04pm"),
