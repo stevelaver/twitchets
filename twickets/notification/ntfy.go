@@ -2,8 +2,10 @@ package notification
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
+	"os"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/samber/lo"
@@ -58,6 +60,35 @@ func NewNtfyClient(config NtfyConfig) (*NtfyClient, error) {
 
 		client: client.New(nil),
 	}, nil
+}
+
+func NewNtfyClientFromEnv() (*NtfyClient, error) {
+	ntfyUrl := os.Getenv("NTFY_URL")
+	if ntfyUrl == "" {
+		return nil, errors.New("NTFY_URL is not set")
+	}
+
+	ntfyUser := os.Getenv("NTFY_USER")
+	if ntfyUser == "" {
+		return nil, errors.New("NTFY_USER is not set")
+	}
+
+	ntfyPassword := os.Getenv("NTFY_PASSWORD")
+	if ntfyPassword == "" {
+		return nil, errors.New("NTFY_PASSWORD is not set")
+	}
+
+	ntfyTopic := os.Getenv("NTFY_TOPIC")
+	if ntfyTopic == "" {
+		return nil, errors.New("NTFY_TOPIC is not set")
+	}
+
+	return NewNtfyClient(NtfyConfig{
+		Url:      ntfyUrl,
+		User:     ntfyUser,
+		Password: ntfyPassword,
+		Topic:    ntfyTopic,
+	})
 }
 
 // NtfyViewAction creates a ntfy actions string for a single view actions

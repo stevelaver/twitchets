@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"os"
 	"strings"
 	"time"
 
@@ -62,16 +61,7 @@ func init() {
 }
 
 func main() {
-	gotifyUrl := os.Getenv("GOTIFY_URL")
-	if gotifyUrl == "" {
-		log.Fatal("GOTIFY_URL is not set")
-	}
-
-	gotifyToken := os.Getenv("GOTIFY_TOKEN")
-	if gotifyToken == "" {
-		log.Fatal("GOTIFY_TOKEN is not set")
-	}
-
+	// Twickets client
 	parsedCountryCode := twickets.Countries.Parse(countryCode)
 	if parsedCountryCode == nil {
 		log.Fatalf("'%s' is not a valid country code", parsedCountryCode)
@@ -87,12 +77,13 @@ func main() {
 		regions = append(regions, *parsedRegionCode)
 	}
 
-	notificationClient, err := notification.NewGotifyClient(gotifyUrl, gotifyToken)
+	twicketsClient := twickets.NewClient(nil)
+
+	// Notification Client
+	notificationClient, err := notification.NewGotifyClientFromEnv()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	twicketsClient := twickets.NewClient(nil)
 
 	slog.Info(
 		fmt.Sprintf("Monitoring: %s", strings.Join(monitoredEventNames, ", ")),

@@ -1,9 +1,11 @@
 package notification
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/gotify/go-api-client/v2/auth"
@@ -62,4 +64,18 @@ func NewGotifyClient(gotifyUrl, gotifyToken string) (*GotifyClient, error) {
 		token:  gotifyToken, // TODO validate this token?
 		client: gotify.NewClient(parsedGotifyUrl, &http.Client{}),
 	}, nil
+}
+
+func NewGotifyClientFromEnv() (*GotifyClient, error) {
+	gotifyUrl := os.Getenv("GOTIFY_URL")
+	if gotifyUrl == "" {
+		return nil, errors.New("GOTIFY_URL is not set")
+	}
+
+	gotifyToken := os.Getenv("GOTIFY_TOKEN")
+	if gotifyToken == "" {
+		return nil, errors.New("GOTIFY_TOKEN is not set")
+	}
+
+	return NewGotifyClient(gotifyUrl, gotifyToken)
 }
