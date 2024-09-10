@@ -4,9 +4,9 @@ FROM golang:1.21 as builder
 WORKDIR /twitchets
 COPY . .
 RUN go mod download
-RUN go build -v -o bin/twitchets
+RUN go build -v -o ./bin/ ./cmd/twitchets
 
-# Ditribution Image
+# Distribution Image
 FROM alpine:latest
 
 RUN apk add --no-cache libc6-compat

@@ -18,7 +18,7 @@ tasks:
 
   build:
     cmds:
-      - go build -v -o bin/twitchets
+      - go build -v -o ./bin/ ./cmd/twitchets
 
   build:docker:
     cmds:
