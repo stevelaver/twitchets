@@ -172,7 +172,7 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 
 // ticketsMatchingEvent will return the tickets that match any of the specified events.
 func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
-	similarityConfig := metrics.NewSmithWatermanGotoh()
+	similarityConfig := metrics.NewJaroWinkler()
 	similarityConfig.CaseSensitive = false
 
 	tickets := make(Tickets, 0, len(t))
