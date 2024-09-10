@@ -170,19 +170,15 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 	return filteredTickets
 }
 
-var levenshteinConfig = &metrics.Levenshtein{
-	CaseSensitive: true,
-	InsertCost:    1,
-	DeleteCost:    1,
-	ReplaceCost:   1,
-}
-
 // ticketsMatchingEvent will return the tickets that match any of the specified events.
 func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
+	similarityConfig := metrics.NewSmithWatermanGotoh()
+	similarityConfig.CaseSensitive = false
+
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range eventNames {
-			similarity := strutil.Similarity(eventName, eventName, levenshteinConfig)
+			similarity := strutil.Similarity(eventName, eventName, similarityConfig)
 			if similarity > 0.8 {
 				tickets = append(tickets, ticket)
 			}
