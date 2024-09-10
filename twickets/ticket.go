@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/lithammer/fuzzysearch/fuzzy"
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
 	"github.com/samber/lo"
 )
 
@@ -107,7 +108,7 @@ type Tour struct {
 	Name         string   `json:"tourName"`
 	Slug         string   `json:"slug"`
 	FirstEvent   *Date    `json:"minDate"`      // 2024-06-06
-	LastEvent    *Date    `json:"maxDate"`      // 2024-11-14"
+	LastEvent    *Date    `json:"maxDate"`      // 2024-11-14
 	CountryCodes []string `json:"countryCodes"` // TODO use enum
 }
 
@@ -169,12 +170,20 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 	return filteredTickets
 }
 
+var levenshteinConfig = &metrics.Levenshtein{
+	CaseSensitive: true,
+	InsertCost:    1,
+	DeleteCost:    1,
+	ReplaceCost:   1,
+}
+
 // ticketsMatchingEvent will return the tickets that match any of the specified events.
 func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range eventNames {
-			if fuzzy.MatchNormalizedFold(eventName, ticket.Event.Name) {
+			similarity := strutil.Similarity(eventName, eventName, levenshteinConfig)
+			if similarity > 0.8 {
 				tickets = append(tickets, ticket)
 			}
 		}
