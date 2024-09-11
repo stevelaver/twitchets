@@ -8,7 +8,6 @@ import (
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
-	"github.com/samber/lo"
 )
 
 type Ticket struct {
@@ -176,7 +175,7 @@ func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
 	similarityConfig.CaseSensitive = false
 
 	tickets := make(Tickets, 0, len(t))
-	for _, ticket := range lo.Reverse(t) {
+	for _, ticket := range t {
 		for _, eventName := range eventNames {
 			similarity := strutil.Similarity(ticket.Event.Name, eventName, similarityConfig)
 			if similarity >= 0.9 {
@@ -193,12 +192,9 @@ func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
 func (t Tickets) ticketsCreatedBeforeTime(beforeTime time.Time) Tickets {
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range t {
-
-		if ticket.CreatedAt.Time.After(beforeTime) {
-			break
+		if ticket.CreatedAt.Time.Before(beforeTime) {
+			tickets = append(tickets, ticket)
 		}
-
-		tickets = append(tickets, ticket)
 	}
 
 	return tickets
@@ -209,12 +205,9 @@ func (t Tickets) ticketsCreatedBeforeTime(beforeTime time.Time) Tickets {
 func (t Tickets) ticketsCreatedAfterTime(afterTime time.Time) Tickets {
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range t {
-
-		if ticket.CreatedAt.Time.Before(afterTime) {
-			break
+		if ticket.CreatedAt.Time.After(afterTime) {
+			tickets = append(tickets, ticket)
 		}
-
-		tickets = append(tickets, ticket)
 	}
 
 	return tickets
