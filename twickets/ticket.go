@@ -178,7 +178,7 @@ func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range eventNames {
-			similarity := strutil.Similarity(eventName, eventName, similarityConfig)
+			similarity := strutil.Similarity(ticket.Event.Name, eventName, similarityConfig)
 			if similarity >= 0.9 {
 				tickets = append(tickets, ticket)
 			}
