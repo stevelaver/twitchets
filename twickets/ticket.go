@@ -172,14 +172,14 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 
 // ticketsMatchingEvent will return the tickets that match any of the specified events.
 func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
-	similarityConfig := metrics.NewJaroWinkler()
+	similarityConfig := metrics.NewLevenshtein()
 	similarityConfig.CaseSensitive = false
 
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range lo.Reverse(t) {
 		for _, eventName := range eventNames {
 			similarity := strutil.Similarity(eventName, eventName, similarityConfig)
-			if similarity > 0.8 {
+			if similarity >= 0.9 {
 				tickets = append(tickets, ticket)
 			}
 		}
