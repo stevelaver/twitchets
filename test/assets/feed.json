@@ -191,9 +191,9 @@
           "endTimeZone": "America/Los_Angeles"
         },
         "ticketQuantity": 3,
-        "minPrice": { "currencyCode": "GBP", "amountInCents": 8500 },
-        "averagePrice": { "currencyCode": "GBP", "amountInCents": 8500 },
-        "maxPrice": { "currencyCode": "GBP", "amountInCents": 8500 },
+        "minPrice": { "currencyCode": "GBP", "amountInCents": 6000 },
+        "averagePrice": { "currencyCode": "GBP", "amountInCents": 6000 },
+        "maxPrice": { "currencyCode": "GBP", "amountInCents": 6000 },
         "faceValuePrice": { "currencyCode": "GBP", "amountInCents": 25500 },
         "originalSellingPrice": {
           "currencyCode": "GBP",
@@ -201,7 +201,7 @@
         },
         "previousSellingPrice": {
           "currencyCode": "GBP",
-          "amountInCents": 8500
+          "amountInCents": 6000
         },
         "priceDeclaration": 1,
         "generalMinAge": 19,
@@ -211,15 +211,15 @@
         "ticketsAdditionalInformation": [[], [], []],
         "twicketsFeePerTicket": {
           "currencyCode": "GBP",
-          "amountInCents": 1275
+          "amountInCents": 900
         },
         "seatAssigned": false,
         "section": "",
         "totalSellingPriceFeeApplicable": {
           "currencyCode": "GBP",
-          "amountInCents": 25500
+          "amountInCents": 18000
         },
-        "totalSellingPrice": { "currencyCode": "GBP", "amountInCents": 25500 },
+        "totalSellingPrice": { "currencyCode": "GBP", "amountInCents": 18000 },
         "totalTwicketsFee": { "currencyCode": "GBP", "amountInCents": 3825 },
         "sellerWillConsiderOffers": false,
         "currencyCode": "GBP"
