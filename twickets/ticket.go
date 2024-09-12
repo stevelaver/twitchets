@@ -38,23 +38,25 @@ func (t Ticket) Link() string {
 
 // TotalPrice is total price of all tickets.
 // This the tickets price plus the twickets fee.
-func (t Ticket) TotalPrice() Price { return t.TicketsPrice.Add(t.TwicketsFee) }
+func (t Ticket) TotalPrice() Price {
+	return t.TicketsPrice.Add(t.TwicketsFee)
+}
 
 // TotalTicketPrice is total price of a single ticket.
 // This the tickets price plus the twickets fee divided by the number of tickets.
-func (t Ticket) TotalTicketPrice() Price { return t.TotalPrice().Divide(t.TicketQuantity) }
+func (t Ticket) TotalTicketPrice() Price {
+	return t.TotalPrice().Divide(t.TicketQuantity)
+}
 
 // OriginalTicketsPrice is original price of a single ticket.
 // This the original tickets price divided by the number of tickets.
-func (t Ticket) OriginalTicketPrice() Price { return t.OriginalTotalPrice.Divide(t.TicketQuantity) }
+func (t Ticket) OriginalTicketPrice() Price {
+	return t.OriginalTotalPrice.Divide(t.TicketQuantity)
+}
 
 // Discount is the price discount as a percentage
 func (t Ticket) Discount() float64 {
-	discount := (1 - t.OriginalTotalPrice.Number()/t.OriginalTotalPrice.Number()) * 100
-	if discount < 0 {
-		return 0
-	}
-	return discount
+	return (1 - t.TotalPrice().Number()/t.OriginalTotalPrice.Number()) * 100
 }
 
 func (t Ticket) DiscountString() string {

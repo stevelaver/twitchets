@@ -76,3 +76,9 @@ func TestGetEventById(t *testing.T) {
 	ticket := tickets.GetById("156783487261837")
 	require.NotNil(t, ticket)
 }
+
+func TestDiscount(t *testing.T) {
+	tickets := getTestTickets(t)
+	discountString := tickets[0].DiscountString()
+	require.Equal(t, "14.41%", discountString)
+}
