@@ -19,6 +19,7 @@ require (
 	github.com/adrg/strutil v0.3.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.1 // indirect
 	github.com/globalsign/mgo v0.0.0-20180905125535-1ca0a4f7cbcb // indirect
 	github.com/go-openapi/analysis v0.17.0 // indirect
@@ -31,13 +32,16 @@ require (
 	github.com/go-openapi/strfmt v0.17.0 // indirect
 	github.com/go-openapi/swag v0.17.0 // indirect
 	github.com/go-openapi/validate v0.17.0 // indirect
+	github.com/knadh/koanf v1.5.0 // indirect
 	github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329 // indirect
-	github.com/mitchellh/mapstructure v1.1.2 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/olebedev/when v0.0.0-20221205223600-4d190b02b8d8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/term v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.3.0 // indirect

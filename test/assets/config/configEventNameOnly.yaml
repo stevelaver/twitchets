@@ -1,0 +1,5 @@
+# TODO - format not yet supported. Events are not maps
+country: GB
+events:
+  - Event 1
+  - Event 2

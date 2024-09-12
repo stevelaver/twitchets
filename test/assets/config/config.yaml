@@ -1,0 +1,9 @@
+# TODO - format not yet supported
+country: GB
+regions:
+  - GBLO
+  - GBNW
+events:
+  - name: Event 1
+  - name: Event 2
+    num_tickets: 1
