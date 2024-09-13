@@ -11,8 +11,10 @@ FROM alpine:latest
 
 RUN apk add --no-cache libc6-compat
 
-COPY --from=builder /twitchets/bin/twitchets /twitchets
+COPY --from=builder /twitchets/bin/twitchets /usr/bin/twitchets
+
+WORKDIR /twitchets
 
 EXPOSE 5656
 
-ENTRYPOINT ["/twitchets"]
+ENTRYPOINT ["/usr/bin/twitchets"]
