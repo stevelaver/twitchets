@@ -82,3 +82,32 @@ func TestDiscount(t *testing.T) {
 	discountString := tickets[0].DiscountString()
 	require.Equal(t, "14.41%", discountString)
 }
+
+// TestFilterName tests we find tickets for event names that are
+// not specified quite right
+func TestFilterName(t *testing.T) {
+	strangerThingsActual := "Stranger Things: The First Shadow"
+	strangerThingsTest := "Stranger Things"
+
+	backToTheFutureActual := "Back To The Future: The Musical"
+	backToTheFutureTest := "Back To The Future"
+
+	tickets := twickets.Tickets{
+		{Event: twickets.Event{Name: strangerThingsActual}},
+		{Event: twickets.Event{Name: backToTheFutureActual}},
+	}
+
+	// Stranger Things
+	gotTickets := tickets.Filter(twickets.TicketFilter{
+		EventNames: []string{strangerThingsTest},
+	})
+	require.Len(t, gotTickets, 1)
+	require.Equal(t, strangerThingsActual, gotTickets[0].Event.Name)
+
+	// Back to the Future
+	gotTickets = tickets.Filter(twickets.TicketFilter{
+		EventNames: []string{backToTheFutureTest},
+	})
+	require.Len(t, gotTickets, 1)
+	require.Equal(t, backToTheFutureActual, gotTickets[0].Event.Name)
+}
