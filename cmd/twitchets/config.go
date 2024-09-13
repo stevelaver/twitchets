@@ -70,14 +70,9 @@ type EventConfig struct {
 	NumTickets int    `koanf:"num_tickets"`
 }
 
-// Global koanf instance. Use "." as the key path delimiter. This can be "/" or any character.
-var (
-	k      = koanf.New(".")
-	parser = yaml.Parser()
-)
-
 func LoadConfig(filePath string) (Config, error) {
 	// Load config.
+	k := koanf.New(".")
 	err := k.Load(file.Provider(filePath), yaml.Parser())
 	if err != nil {
 		return Config{}, fmt.Errorf("error loading config: %w", err)
