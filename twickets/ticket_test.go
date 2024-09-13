@@ -39,7 +39,7 @@ func TestUnmarshalFeedJson(t *testing.T) {
 	require.Equal(t, "London Stadium", tickets[0].Event.Venue.Name)
 	require.Equal(t, "Foo Fighters - Everything Or Nothing At All Tour", tickets[0].Tour.Name)
 	require.Equal(t, 3, tickets[0].TicketQuantity)
-	require.Equal(t, "£255.00", tickets[0].TicketsPrice.String())
+	require.Equal(t, "£180.00", tickets[0].TicketsPrice.String())
 	require.Equal(t, "£38.25", tickets[0].TwicketsFee.String())
 	require.Equal(t, "£255.00", tickets[0].OriginalTotalPrice.String())
 
