@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -18,67 +20,25 @@ const (
 	refetchTime   = 1 * time.Minute
 )
 
-var (
-	// Config variables
-	// NOTE:
-	// Region coeds are currently ignored due to
-	// issues with the twickets filter api
-	countryCode         = "GB"
-	regionCodes         = []string{"GBLO"} // TODO reenable. See note in config variables.
-	monitoredEventNames = []string{
-		// Theatre
-		"Back to the Future",
-		"Frozen",
-		"Hadestown",
-		"Hamilton",
-		"Harry Potter & the Cursed Child",
-		"Kiss Me Kate",
-		"Lion King",
-		"Matilda",
-		"Mean Girls",
-		"Moulin Rouge",
-		"My Neighbour Totoro",
-		"Operation Mincemeat",
-		"Starlight Express",
-		"Stranger Things",
-		"The Phantom Opera",
-		"The Wizard of Oz",
-		// Gigs
-		"Coldplay",
-		"Gary Clark Jr.",
-		"Glass Animals",
-		"Jungle",
-		"Oasis",
-		"Taylor Swift",
-	}
-
-	// Package variables
-	country       twickets.Country
-	regions       []twickets.Region
-	lastCheckTime = time.Now()
-)
+var lastCheckTime = time.Now()
 
 func init() {
 	_ = godotenv.Load()
 }
 
 func main() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("failed to get working directory:, %v", err)
+	}
+
+	configPath := filepath.Join(cwd, "config.yaml")
+	config, err := LoadConfig(configPath)
+	if err != nil {
+		log.Fatalf("config error:, %v", err)
+	}
+
 	// Twickets client
-	parsedCountryCode := twickets.Countries.Parse(countryCode)
-	if parsedCountryCode == nil {
-		log.Fatalf("'%s' is not a valid country code", parsedCountryCode)
-	}
-	country = *parsedCountryCode
-
-	regions = make([]twickets.Region, 0, len(regionCodes))
-	for _, regionCode := range regionCodes {
-		parsedRegionCode := twickets.Regions.Parse(regionCode)
-		if parsedRegionCode == nil {
-			log.Fatalf("'%s' is not a valid region code", parsedRegionCode)
-		}
-		regions = append(regions, *parsedRegionCode)
-	}
-
 	twicketsClient := twickets.NewClient(nil)
 
 	// Notification Client
@@ -88,11 +48,11 @@ func main() {
 	}
 
 	slog.Info(
-		fmt.Sprintf("Monitoring: %s", strings.Join(monitoredEventNames, ", ")),
+		fmt.Sprintf("Monitoring: %s", strings.Join(config.EventNames(), ", ")),
 	)
 
 	// Initial execution
-	fetchAndProcessTickets(twicketsClient, notificationClient)
+	fetchAndProcessTickets(config, twicketsClient, notificationClient)
 
 	// Create ticker
 	ticker := time.NewTicker(refetchTime)
@@ -103,7 +63,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			fetchAndProcessTickets(twicketsClient, notificationClient)
+			fetchAndProcessTickets(config, twicketsClient, notificationClient)
 		case <-exitChan:
 			return
 		}
@@ -111,6 +71,7 @@ func main() {
 }
 
 func fetchAndProcessTickets(
+	config Config,
 	twicketsClient *twickets.Client,
 	notificationClient notification.Client,
 ) {
@@ -122,7 +83,7 @@ func fetchAndProcessTickets(
 	tickets, err := twicketsClient.FetchTickets(
 		context.Background(),
 		twickets.FetchTicketsInput{
-			Country: country,
+			Country: config.Country,
 			// Regions:    regions, // TODO reenable. See note in config variables.
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
@@ -140,7 +101,7 @@ func fetchAndProcessTickets(
 
 	filteredTickets := tickets.Filter(
 		twickets.TicketFilter{
-			EventNames: monitoredEventNames,
+			EventNames: config.EventNames(),
 		},
 	)
 

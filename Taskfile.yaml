@@ -26,7 +26,7 @@ tasks:
 
   run:
     cmds:
-      - go run .
+      - go run ./cmd/twitchets
 
   run:docker:
     deps: [build:docker]

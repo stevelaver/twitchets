@@ -16,6 +16,15 @@ type Config struct {
 	Events  []EventConfig     `koanf:"events"`
 }
 
+func (c Config) EventNames() []string {
+	eventNames := make([]string, 0, len(c.Events))
+	for _, event := range c.Events {
+		eventName := event.Name
+		eventNames = append(eventNames, eventName)
+	}
+	return eventNames
+}
+
 func (c *Config) parseKoanf(k *koanf.Koanf) error {
 	if k == nil {
 		return nil

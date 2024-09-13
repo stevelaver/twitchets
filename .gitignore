@@ -34,4 +34,5 @@ go.work
 
 # Local go mod vendor ignore
 vendor/
+
 .aider*

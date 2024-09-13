@@ -9,13 +9,15 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/main.go"
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/cmd/twitchets"
     },
     {
       "name": "Scratch",
       "type": "go",
       "request": "launch",
       "mode": "auto",
+      "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/scratch/scratch.go"
     }
   ]
