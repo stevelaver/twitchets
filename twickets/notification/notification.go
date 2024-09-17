@@ -12,32 +12,37 @@ type Client interface {
 }
 
 func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // nolint: revive
-	lines := []string{
-		fmt.Sprintf(
-			"%s, %s",
-			ticket.Event.Venue.Name,
-			ticket.Event.Venue.Location.Name,
-		),
-		fmt.Sprintf(
-			"%s %s",
-			ticket.Event.Date.Format("Monday 2 January 2006"),
-			ticket.Event.Time.Format("3:04pm"),
-		),
-		fmt.Sprintf("%d ticket(s)", ticket.TicketQuantity),
-		"",
-		fmt.Sprintf("Ticket Price: %s", ticket.TotalTicketPrice().String()),
-		fmt.Sprintf("Total Price: %s", ticket.TotalPrice().String()),
-		fmt.Sprintf("Discount: %s", ticket.DiscountString()),
-		"",
-		fmt.Sprintf("Original Ticket Price: %s", ticket.OriginalTicketPrice().String()),
-		fmt.Sprintf("Original Total Price: %s", ticket.OriginalTotalPrice.String()),
-	}
-	if includeLink {
-		lines = append(lines,
-			"",
-			fmt.Sprintf("[Buy](%s)", ticket.Link()),
-		)
+	var builder strings.Builder
+
+	writeLine(&builder, "%s, %s", ticket.Event.Venue.Name, ticket.Event.Venue.Location.Name)
+	writeLine(&builder, "%s %s", ticket.Event.Date.Format("Monday 2 January 2006"), ticket.Event.Time.Format("3:04pm"))
+	writeLine(&builder, "%d ticket(s)", ticket.TicketQuantity)
+
+	writeLine(&builder, "")
+
+	writeLine(&builder, "Ticket Price: %s", ticket.TotalTicketPrice().String())
+	writeLine(&builder, "Total Price: %s", ticket.TotalPrice().String())
+	if ticket.Discount() < 0 {
+		writeLine(&builder, "Discount: None")
+	} else {
+		writeLine(&builder, "Discount: %s", ticket.DiscountString())
 	}
 
-	return strings.Join(lines, "\n")
+	writeLine(&builder, "")
+
+	writeLine(&builder, "Original Ticket Price: %s", ticket.OriginalTicketPrice().String())
+	writeLine(&builder, "Original Total Price: %s", ticket.OriginalTotalPrice.String())
+
+	if includeLink {
+		writeLine(&builder, "")
+		writeLine(&builder, "Buy: %s", ticket.Link())
+	}
+
+	return builder.String()
+}
+
+func writeLine(builder *strings.Builder, format string, args ...any) {
+	_, _ = builder.WriteString(
+		fmt.Sprintf(format, args...) + "\n",
+	)
 }
