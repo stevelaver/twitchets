@@ -3,6 +3,7 @@ package testutils
 import (
 	"bufio"
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -62,7 +63,12 @@ func (t *proxyTransport) RoundTrip(request *http.Request) (*http.Response, error
 	t.index = (t.index + 1) % len(t.proxyList)
 
 	// Create a new transport and us it for the request
-	transport := &http.Transport{Proxy: http.ProxyURL(proxyURL)}
+	transport := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
+	}
 	return transport.RoundTrip(request)
 }
 

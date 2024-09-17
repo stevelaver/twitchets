@@ -2,6 +2,7 @@ package twickets
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -114,7 +115,11 @@ func (c *Client) FetchFeedTickets(ctx context.Context, feedUrl string) (Tickets,
 	defer response.Body.Close()
 
 	if response.StatusCode >= 300 {
-		return nil, fmt.Errorf("got error response: %s", response.Status)
+		err := fmt.Errorf("error response %s", response.Status)
+		if response.StatusCode == http.StatusForbidden {
+			err = fmt.Errorf("%s: possibly due to tls misconfiguration", err)
+		}
+		return nil, err
 	}
 
 	bodyBytes, err := io.ReadAll(response.Body)
@@ -129,5 +134,14 @@ func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
+
+	if httpClient.Transport == nil {
+		httpClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				MinVersion: tls.VersionTLS12,
+			},
+		}
+	}
+
 	return &Client{client: httpClient}
 }

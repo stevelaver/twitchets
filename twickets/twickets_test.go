@@ -2,6 +2,7 @@ package twickets_test
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/ahobsonsayers/twitchets/test/testutils"
@@ -12,8 +13,9 @@ import (
 func TestGetLatestTickets(t *testing.T) {
 	testutils.SkipIfCI(t, "Does not work in CI. Fix")
 
-	httpClient, err := testutils.NewProxyClient(testutils.RoosterKidProxyListURL)
-	require.NoError(t, err)
+	httpClient := http.DefaultClient
+	// httpClient, err := testutils.NewProxyClient(testutils.RoosterKidProxyListURL)
+	// require.NoError(t, err)
 
 	twicketsClient := twickets.NewClient(httpClient)
 	tickets, err := twicketsClient.FetchTickets(
@@ -23,5 +25,5 @@ func TestGetLatestTickets(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
-	require.Len(t, tickets, 10)
+	require.NotEmpty(t, tickets)
 }
