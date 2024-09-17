@@ -69,7 +69,7 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 		return nil, errors.New("country must be set")
 	}
 	if input.CreatedBefore.Before(input.CreatedAfter) {
-		return nil, errors.New("latests time must be after earliest time")
+		return nil, errors.New("created after time must be after the created before time")
 	}
 
 	// Iterate through feeds until have equal to or more tickets than desired

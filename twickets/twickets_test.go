@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
@@ -22,6 +23,11 @@ func TestGetLatestTickets(t *testing.T) {
 		context.Background(),
 		twickets.FetchTicketsInput{
 			Country: twickets.CountryUnitedKingdom,
+			Regions: []twickets.Region{
+				twickets.RegionLondon,
+				twickets.RegionNorthWest,
+			},
+			CreatedAfter: time.Now().Add(-10 * time.Minute),
 		},
 	)
 	require.NoError(t, err)
