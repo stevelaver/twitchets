@@ -3,7 +3,9 @@ package twickets // nolint
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/adrg/strutil"
@@ -174,12 +176,13 @@ func (t Tickets) Filter(filter TicketFilter) Tickets {
 // ticketsMatchingEvent will return the tickets that match any of the specified events.
 func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
 	similarityConfig := metrics.NewJaroWinkler()
-	similarityConfig.CaseSensitive = false
 
 	tickets := make(Tickets, 0, len(t))
 	for _, ticket := range t {
 		for _, eventName := range eventNames {
-			similarity := strutil.Similarity(ticket.Event.Name, eventName, similarityConfig)
+			wantedEventName := normaliseEventName(eventName)
+			gotEventName := normaliseEventName(ticket.Event.Name)
+			similarity := strutil.Similarity(wantedEventName, gotEventName, similarityConfig)
 			if similarity >= 0.85 {
 				tickets = append(tickets, ticket)
 			}
@@ -213,4 +216,14 @@ func (t Tickets) ticketsCreatedAfterTime(afterTime time.Time) Tickets {
 	}
 
 	return tickets
+}
+
+var spaceRegex = regexp.MustCompile(`\s+`)
+
+func normaliseEventName(eventName string) string {
+	eventName = strings.TrimSpace(eventName)
+	eventName = spaceRegex.ReplaceAllString(eventName, " ")
+	eventName = strings.ToLower(eventName)
+	eventName = strings.TrimPrefix(eventName, "the ")
+	return eventName
 }

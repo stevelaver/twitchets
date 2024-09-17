@@ -86,39 +86,49 @@ func TestDiscount(t *testing.T) {
 // TestFilterName tests we find tickets for event names that are
 // not specified quite right
 func TestFilterName(t *testing.T) {
-	strangerThingsActual := "Stranger Things: The First Shadow"
-	strangerThingsTest := "Stranger Things"
+	strangerThingsAsked := "Stranger Things"
+	strangerThingsGot := "Stranger Things: The First Shadow"
 
-	backToTheFutureActual := "Back To The Future: The Musical"
-	backToTheFutureTest := "Back To The Future"
+	backToTheFutureAsked := "Back To The Future"
+	backToTheFutureGot := "Back To The Future: The Musical"
 
-	harryPotterActual := "Harry Potter & The Cursed Child Parts 1 & 2"
-	harryPotterTest := "Harry Potter and the Cursed Child"
+	harryPotterAsked := "Harry Potter and the Cursed Child"
+	harryPotterGot := "Harry Potter & The Cursed Child Parts 1 & 2"
 
-	tickets := twickets.Tickets{
-		{Event: twickets.Event{Name: strangerThingsActual}},
-		{Event: twickets.Event{Name: backToTheFutureActual}},
-		{Event: twickets.Event{Name: harryPotterActual}},
+	wizardOfOzAsked := "The Who"
+	wizardOfOzGot := "The The" // This shouldn't match
+
+	gotTickets := twickets.Tickets{
+		{Event: twickets.Event{Name: strangerThingsGot}},
+		{Event: twickets.Event{Name: backToTheFutureGot}},
+		{Event: twickets.Event{Name: harryPotterGot}},
+		{Event: twickets.Event{Name: wizardOfOzGot}},
 	}
 
 	// Stranger Things
-	gotTickets := tickets.Filter(twickets.TicketFilter{
-		EventNames: []string{strangerThingsTest},
+	filteredTickets := gotTickets.Filter(twickets.TicketFilter{
+		EventNames: []string{strangerThingsAsked},
 	})
-	require.Len(t, gotTickets, 1)
-	require.Equal(t, strangerThingsActual, gotTickets[0].Event.Name)
+	require.Len(t, filteredTickets, 1)
+	require.Equal(t, strangerThingsGot, filteredTickets[0].Event.Name)
 
 	// Back to the Future
-	gotTickets = tickets.Filter(twickets.TicketFilter{
-		EventNames: []string{backToTheFutureTest},
+	filteredTickets = gotTickets.Filter(twickets.TicketFilter{
+		EventNames: []string{backToTheFutureAsked},
 	})
-	require.Len(t, gotTickets, 1)
-	require.Equal(t, backToTheFutureActual, gotTickets[0].Event.Name)
+	require.Len(t, filteredTickets, 1)
+	require.Equal(t, backToTheFutureGot, filteredTickets[0].Event.Name)
 
 	// Harry Potter
-	gotTickets = tickets.Filter(twickets.TicketFilter{
-		EventNames: []string{harryPotterTest},
+	filteredTickets = gotTickets.Filter(twickets.TicketFilter{
+		EventNames: []string{harryPotterAsked},
 	})
-	require.Len(t, gotTickets, 1)
-	require.Equal(t, harryPotterActual, gotTickets[0].Event.Name)
+	require.Len(t, filteredTickets, 1)
+	require.Equal(t, harryPotterGot, filteredTickets[0].Event.Name)
+
+	// Wizard of Oz
+	filteredTickets = gotTickets.Filter(twickets.TicketFilter{
+		EventNames: []string{wizardOfOzAsked},
+	})
+	require.Empty(t, filteredTickets)
 }
