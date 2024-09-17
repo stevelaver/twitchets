@@ -92,9 +92,13 @@ func TestFilterName(t *testing.T) {
 	backToTheFutureActual := "Back To The Future: The Musical"
 	backToTheFutureTest := "Back To The Future"
 
+	harryPotterActual := "Harry Potter & The Cursed Child Parts 1 & 2"
+	harryPotterTest := "Harry Potter and the Cursed Child"
+
 	tickets := twickets.Tickets{
 		{Event: twickets.Event{Name: strangerThingsActual}},
 		{Event: twickets.Event{Name: backToTheFutureActual}},
+		{Event: twickets.Event{Name: harryPotterActual}},
 	}
 
 	// Stranger Things
@@ -110,4 +114,11 @@ func TestFilterName(t *testing.T) {
 	})
 	require.Len(t, gotTickets, 1)
 	require.Equal(t, backToTheFutureActual, gotTickets[0].Event.Name)
+
+	// Harry Potter
+	gotTickets = tickets.Filter(twickets.TicketFilter{
+		EventNames: []string{harryPotterTest},
+	})
+	require.Len(t, gotTickets, 1)
+	require.Equal(t, harryPotterActual, gotTickets[0].Event.Name)
 }
