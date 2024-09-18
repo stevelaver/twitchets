@@ -87,7 +87,7 @@ func fetchAndProcessTickets(
 			// Regions:    regions, // TODO reenable. See note in config variables.
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
-			MaxTickets:    maxNumTickets,
+			NumTickets:    maxNumTickets,
 		},
 	)
 	if err != nil {

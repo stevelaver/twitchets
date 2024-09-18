@@ -16,24 +16,34 @@ type Client struct {
 
 var DefaultClient = NewClient(nil)
 
+// FetchTicketsInput defines parameters when fetching tickets.
+// Tickets can either be fetched by number or by time period.
+// The default is to get a fixed number of tickets.
+// If both a number and time period are set, whichever condition
+// is met first will cause tickets fetching to stop.
 type FetchTicketsInput struct {
+	// Country is required
 	Country Country
+
 	Regions []Region
 
-	// Time which tickets must have been created before.
-	// Defaults to current time.
-	CreatedBefore time.Time
+	// Number of tickets to fetch.
+	// If getting tickets within in a time period using `CreatedAfter`, set this to an arbitrarily
+	// large number (e.g. 250) to ensure all tickets in the period are fetched, while preventing
+	// fetching too many tickets and possibly being rate limited or blocked.
+	// Defaults to 10.
+	// Set to -1 if no limit is desired. This is dangerous and should only be used with well constrained time periods
+	NumTickets int
 
-	// Time which tickets must have been created after.
-	// Defaults to a minute before the current time.
+	// Time which fetched tickets must have been created after.
+	// Set this to fetch tickets in a time period.
+	// Set `NumTickets` to an arbitrarily large number (e.g. 250) to ensure all tickets in the
+	// period are fetched, while preventing fetching too many tickets and possibly being rate limited or blocked.
 	CreatedAfter time.Time
 
-	// Max number of tickets to fetch in the time period.
-	// Set this to an arbitrarily large number to prevent
-	// fetching too many tickets at once and possibly
-	// being rate limited.
-	// Defaults to 250. Usually can be ignored.
-	MaxTickets int
+	// Time which fetched tickets must have been created before.
+	// Defaults to current time.
+	CreatedBefore time.Time
 
 	// Number of tickets to fetch in each request.
 	// Not all tickets are fetched at once - instead
@@ -47,35 +57,43 @@ type FetchTicketsInput struct {
 }
 
 func (f *FetchTicketsInput) applyDefaults() {
+	if f.NumTickets == 0 {
+		f.NumTickets = 10
+	}
 	if f.CreatedBefore.IsZero() {
 		f.CreatedBefore = time.Now()
-	}
-	if f.CreatedAfter.IsZero() {
-		f.CreatedAfter = f.CreatedBefore.Add(-time.Minute)
-	}
-	if f.MaxTickets <= 0 {
-		f.MaxTickets = 250
 	}
 	if f.NumTicketsPerRequest <= 0 {
 		f.NumTicketsPerRequest = 10
 	}
 }
 
+func (f FetchTicketsInput) validate() error {
+	if f.Country.Value == "" {
+		return errors.New("country must be set")
+	}
+	if f.CreatedBefore.Before(f.CreatedAfter) {
+		return errors.New("created after time must be after the created before time")
+	}
+	if f.NumTickets < 0 && f.CreatedAfter.IsZero() {
+		return errors.New("if not limiting number of tickets, created after must be set")
+	}
+	return nil
+}
+
 // FetchTickets gets the tickets desired by the input struct
 func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tickets, error) {
 	input.applyDefaults()
-
-	if input.Country.Value == "" {
-		return nil, errors.New("country must be set")
-	}
-	if input.CreatedBefore.Before(input.CreatedAfter) {
-		return nil, errors.New("created after time must be after the created before time")
+	err := input.validate()
+	if err != nil {
+		return nil, err
 	}
 
 	// Iterate through feeds until have equal to or more tickets than desired
-	tickets := make(Tickets, 0, input.MaxTickets)
+	tickets := make(Tickets, 0, input.NumTickets)
 	earliestTicketTime := input.CreatedBefore
-	for earliestTicketTime.After(input.CreatedAfter) && len(tickets) < input.MaxTickets {
+	for (input.NumTickets < 0 || len(tickets) < input.NumTickets) &&
+		earliestTicketTime.After(input.CreatedAfter) {
 
 		feedUrl := FeedUrl(FeedUrlParams{
 			Country:    input.Country,
@@ -93,8 +111,13 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 		earliestTicketTime = feedTickets[len(feedTickets)-1].CreatedAt.Time
 	}
 
-	// Only return tickets created after the earliest time
-	tickets = tickets.ticketsCreatedAfterTime(input.CreatedAfter)
+	// Only return tickets asked for
+	if len(tickets) > input.NumTickets {
+		tickets = tickets[:input.NumTickets]
+	}
+	if !input.CreatedAfter.IsZero() {
+		tickets = tickets.ticketsCreatedAfterTime(input.CreatedAfter)
+	}
 
 	return tickets, nil
 }
