@@ -42,7 +42,7 @@ type MessageTemplateData struct {
 	Link                string
 }
 
-func renderMessage(ticket twickets.Ticket, includeLink bool) (string, error) {
+func renderMessage(ticket twickets.Ticket, includeLink bool) (string, error) { // nolint: revive
 	templateData := MessageTemplateData{
 		Venue:               ticket.Event.Venue.Name,
 		Location:            ticket.Event.Venue.Location.Name,
