@@ -25,10 +25,15 @@ type GotifyClient struct {
 var _ Client = GotifyClient{}
 
 func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
+	notificationMessage, err := renderMessage(ticket, true)
+	if err != nil {
+		return err
+	}
+
 	params := message.NewCreateMessageParams()
 	params.Body = &models.MessageExternal{
 		Title:   ticket.Event.Name,
-		Message: notificationMessage(ticket, true),
+		Message: notificationMessage,
 		Extras: map[string]any{
 			"client::display": map[string]any{
 				"contentType": "text/markdown",
@@ -42,7 +47,7 @@ func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
 		Priority: 5,
 	}
 
-	_, err := g.client.Message.CreateMessage(
+	_, err = g.client.Message.CreateMessage(
 		params,
 		auth.TokenAuth(g.token),
 	)

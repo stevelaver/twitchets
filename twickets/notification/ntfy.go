@@ -23,9 +23,14 @@ type NtfyClient struct {
 var _ Client = NtfyClient{}
 
 func (c NtfyClient) SendTicketNotification(ticket twickets.Ticket) error {
-	_, err := c.client.Publish(
+	notificationMessage, err := renderMessage(ticket, false)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.client.Publish(
 		c.url.String(),
-		notificationMessage(ticket, false),
+		notificationMessage,
 		client.WithTitle(ticket.Event.Name),
 		client.WithActions(NtfyViewAction("Open Link", lo.ToPtr(ticket.Link()))),
 		client.WithHeader("Content-Type", "text/markdown"),

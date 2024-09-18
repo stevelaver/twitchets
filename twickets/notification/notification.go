@@ -1,48 +1,69 @@
 package notification
 
 import (
+	"bytes"
+	"embed"
 	"fmt"
-	"strings"
+	"log"
+	"text/template"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
 )
+
+var (
+	//go:embed template/message.tmpl.md
+	messageTemplateFS embed.FS
+	messageTemplate   *template.Template
+)
+
+func init() {
+	var err error
+	messageTemplate, err = template.ParseFS(messageTemplateFS, "message.tmpl.md")
+	if err != nil {
+		log.Fatalf("failed to read notification message template: %v", err)
+	}
+}
 
 type Client interface {
 	SendTicketNotification(twickets.Ticket) error
 }
 
-func notificationMessage(ticket twickets.Ticket, includeLink bool) string { // nolint: revive
-	var builder strings.Builder
-
-	writeLine(&builder, "%s, %s", ticket.Event.Venue.Name, ticket.Event.Venue.Location.Name)
-	writeLine(&builder, "%s %s", ticket.Event.Date.Format("Monday 2 January 2006"), ticket.Event.Time.Format("3:04pm"))
-	writeLine(&builder, "%d ticket(s)", ticket.TicketQuantity)
-
-	writeLine(&builder, "")
-
-	writeLine(&builder, "Ticket Price: %s", ticket.TotalTicketPrice().String())
-	writeLine(&builder, "Total Price: %s", ticket.TotalPrice().String())
-	if ticket.Discount() < 0 {
-		writeLine(&builder, "Discount: None")
-	} else {
-		writeLine(&builder, "Discount: %s", ticket.DiscountString())
-	}
-
-	writeLine(&builder, "")
-
-	writeLine(&builder, "Original Ticket Price: %s", ticket.OriginalTicketPrice().String())
-	writeLine(&builder, "Original Total Price: %s", ticket.OriginalTotalPrice.String())
-
-	if includeLink {
-		writeLine(&builder, "")
-		writeLine(&builder, "Buy: %s", ticket.Link())
-	}
-
-	return builder.String()
+type MessageTemplateData struct {
+	Venue               string
+	Location            string
+	Date                string
+	Time                string
+	NumTickets          int
+	TotalTicketPrice    string
+	TotalPrice          string
+	OriginalTicketPrice string
+	OriginalTotalPrice  string
+	Discount            float64
+	Link                string
 }
 
-func writeLine(builder *strings.Builder, format string, args ...any) {
-	_, _ = builder.WriteString(
-		fmt.Sprintf(format, args...) + "\n",
-	)
+func renderMessage(ticket twickets.Ticket, includeLink bool) (string, error) {
+	templateData := MessageTemplateData{
+		Venue:               ticket.Event.Venue.Name,
+		Location:            ticket.Event.Venue.Location.Name,
+		Date:                ticket.Event.Date.Format("Monday 2 January 2006"),
+		Time:                ticket.Event.Time.Format("3:04pm"),
+		NumTickets:          ticket.TicketQuantity,
+		TotalTicketPrice:    ticket.TotalTicketPrice().String(),
+		TotalPrice:          ticket.TotalPrice().String(),
+		OriginalTicketPrice: ticket.OriginalTicketPrice().String(),
+		OriginalTotalPrice:  ticket.OriginalTotalPrice.String(),
+		Discount:            ticket.Discount(),
+	}
+	if includeLink {
+		templateData.Link = ticket.Link()
+	}
+
+	var buffer bytes.Buffer
+	err := messageTemplate.Execute(&buffer, templateData)
+	if err != nil {
+		return "", fmt.Errorf("failed to render notification message template:, %w", err)
+	}
+
+	return buffer.String(), nil
 }
