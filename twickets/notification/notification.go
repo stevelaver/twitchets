@@ -18,7 +18,7 @@ var (
 
 func init() {
 	var err error
-	messageTemplate, err = template.ParseFS(messageTemplateFS, "message.tmpl.md")
+	messageTemplate, err = template.ParseFS(messageTemplateFS, "template/message.tmpl.md")
 	if err != nil {
 		log.Fatalf("failed to read notification message template: %v", err)
 	}

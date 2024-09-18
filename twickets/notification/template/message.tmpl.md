@@ -4,14 +4,15 @@
 Num Tickets: {{ .NumTickets }} ticket(s)
 Ticket Price: {{ .TotalTicketPrice }}
 Total Price: {{ .TotalPrice }}
-{{ if lt .Discount 0.0 }}
+{{ if lt .Discount 0.0 -}}
 Discount: None
-{{ else }}
-Discount: {{ .Discount }}%
-{{ end }}
+{{- else -}}
+Discount: {{ printf "%.2f" .Discount }}%
+{{- end }}
 
 Original Ticket Price: {{ .OriginalTicketPrice }}
 Original Total Price: {{ .OriginalTotalPrice }}
-{{ if .Link != "" }}
+
+{{ if ne .Link "" -}}
 Buy: {{ .Link }}
-{{ end }}
+{{- end }}
