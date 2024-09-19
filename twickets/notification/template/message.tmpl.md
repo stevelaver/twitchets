@@ -1,7 +1,7 @@
 {{ .Venue }}, {{ .Location }}
 {{ .Date }} {{ .Time }}
 
-Num Tickets: {{ .NumTickets }} ticket(s)
+Number: {{ .NumTickets }} ticket(s)
 Ticket Price: {{ .TotalTicketPrice }}
 Total Price: {{ .TotalPrice }}
 {{ if lt .Discount 0.0 -}}
