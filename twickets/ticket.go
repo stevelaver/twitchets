@@ -7,9 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/adrg/strutil"
-	"github.com/adrg/strutil/metrics"
 )
 
 type Ticket struct {
@@ -99,11 +96,11 @@ type Venue struct {
 }
 
 type Location struct {
-	Id          string `json:"id"`
-	Name        string `json:"shortName"`
-	FullName    string `json:"name"`
-	CountryCode string `json:"countryCode"` // TODO use enum
-	RegionCode  string `json:"regionCode"`  // TODO use enum
+	Id          string  `json:"id"`
+	Name        string  `json:"shortName"`
+	FullName    string  `json:"name"`
+	CountryCode Country `json:"countryCode"`
+	RegionCode  Region  `json:"regionCode"`
 }
 
 type Tour struct {
@@ -150,46 +147,22 @@ func (t Tickets) GetById(id string) *Ticket {
 	return nil
 }
 
-type TicketFilter struct {
-	EventNames    []string
-	CreatedBefore time.Time
-	CreatedAfter  time.Time
-}
-
 // Filter filters tickets by a set of conditions
-func (t Tickets) Filter(filter TicketFilter) Tickets {
-	filteredTickets := t
-
-	if !filter.CreatedBefore.IsZero() {
-		filteredTickets = filteredTickets.ticketsCreatedBeforeTime(filter.CreatedBefore)
-	}
-	if !filter.CreatedAfter.IsZero() {
-		filteredTickets = filteredTickets.ticketsCreatedAfterTime(filter.CreatedAfter)
-	}
-	if len(filter.EventNames) != 0 {
-		filteredTickets = filteredTickets.ticketsMatchingEvents(filter.EventNames)
+func (t Tickets) Filter(filters []Filter) Tickets {
+	if len(filters) == 0 {
+		return t
 	}
 
-	return filteredTickets
-}
-
-// ticketsMatchingEvent will return the tickets that match any of the specified events.
-func (t Tickets) ticketsMatchingEvents(eventNames []string) Tickets {
-	similarityConfig := metrics.NewJaroWinkler()
-
-	tickets := make(Tickets, 0, len(t))
+	filteredTickets := make(Tickets, 0, len(t))
 	for _, ticket := range t {
-		for _, eventName := range eventNames {
-			wantedEventName := normaliseEventName(eventName)
-			gotEventName := normaliseEventName(ticket.Event.Name)
-			similarity := strutil.Similarity(wantedEventName, gotEventName, similarityConfig)
-			if similarity >= 0.85 {
-				tickets = append(tickets, ticket)
+		for _, filter := range filters {
+			if filter.TicketMatches(ticket) {
+				filteredTickets = append(filteredTickets, ticket)
 			}
 		}
 	}
 
-	return tickets
+	return filteredTickets
 }
 
 // ticketsCreatedBeforeTime will return the tickets created before a specified time.

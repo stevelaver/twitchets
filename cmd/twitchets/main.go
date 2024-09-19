@@ -47,8 +47,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Event names
+	eventNames := make([]string, 0, len(config.Events))
+	for _, event := range config.Events {
+		eventNames = append(eventNames, event.Name)
+	}
 	slog.Info(
-		fmt.Sprintf("Monitoring: %s", strings.Join(config.EventNames(), ", ")),
+		fmt.Sprintf("Monitoring: %s", strings.Join(eventNames, ", ")),
 	)
 
 	// Initial execution
@@ -99,12 +104,7 @@ func fetchAndProcessTickets(
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
-	filteredTickets := tickets.Filter(
-		twickets.TicketFilter{
-			EventNames: config.EventNames(),
-		},
-	)
-
+	filteredTickets := tickets.Filter(config.Events)
 	for _, ticket := range filteredTickets {
 		slog.Info(
 			"Found tickets for monitored event",

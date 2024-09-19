@@ -38,12 +38,16 @@ const countryQueryKey = "countryCode"
 type Region enum.Member[string]
 
 func (r *Region) UnmarshalJSON(data []byte) error {
-	var regionString string
-	err := json.Unmarshal(data, &regionString)
+	var regionBytes []byte
+	err := json.Unmarshal(data, &regionBytes)
 	if err != nil {
 		return err
 	}
+	return r.UnmarshalText(regionBytes)
+}
 
+func (r *Region) UnmarshalText(data []byte) error {
+	regionString := string(data)
 	region := Regions.Parse(regionString)
 	if region == nil {
 		return fmt.Errorf("region '%s' is not valid", regionString)

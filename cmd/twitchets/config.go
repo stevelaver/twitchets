@@ -11,18 +11,9 @@ import (
 )
 
 type Config struct {
-	Country twickets.Country  `koanf:"country"`
-	Regions []twickets.Region `koanf:"regions"`
-	Events  []EventConfig     `koanf:"events"`
-}
-
-func (c Config) EventNames() []string {
-	eventNames := make([]string, 0, len(c.Events))
-	for _, event := range c.Events {
-		eventName := event.Name
-		eventNames = append(eventNames, eventName)
-	}
-	return eventNames
+	Country twickets.Country  `json:"country"`
+	Regions []twickets.Region `json:"regions"`
+	Events  []twickets.Filter `json:"events"`
 }
 
 func (c *Config) parseKoanf(k *koanf.Koanf) error {
@@ -51,9 +42,12 @@ func (c *Config) parseKoanf(k *koanf.Koanf) error {
 		regions = append(regions, *region)
 	}
 
-	// Parse event config
-	var events []EventConfig
-	err := k.Unmarshal("events", &events)
+	// Parse filters
+	var events []twickets.Filter
+	err := k.UnmarshalWithConf(
+		"events", &events,
+		koanf.UnmarshalConf{Tag: `json`},
+	)
 	if err != nil {
 		return fmt.Errorf("invalid events: %w", err)
 	}
@@ -63,11 +57,6 @@ func (c *Config) parseKoanf(k *koanf.Koanf) error {
 	c.Events = events
 
 	return nil
-}
-
-type EventConfig struct {
-	Name       string `koanf:"name"`
-	NumTickets int    `koanf:"num_tickets"`
 }
 
 func LoadConfig(filePath string) (Config, error) {
