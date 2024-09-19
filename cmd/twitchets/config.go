@@ -40,6 +40,13 @@ func (c *Config) parseKoanf(k *koanf.Koanf) error {
 		return fmt.Errorf("invalid events: %w", err)
 	}
 
+	for _, event := range events {
+		err = event.Validate()
+		if err != nil {
+			return err
+		}
+	}
+
 	c.Country = *country
 	c.Events = events
 

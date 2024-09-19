@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Ticket struct {
@@ -163,32 +162,6 @@ func (t Tickets) Filter(filters []Filter) Tickets {
 	}
 
 	return filteredTickets
-}
-
-// ticketsCreatedBeforeTime will return the tickets created before a specified time.
-// Passed tickets MUST be ordered by descending time, so recent tickets appear at start.
-func (t Tickets) ticketsCreatedBeforeTime(beforeTime time.Time) Tickets {
-	tickets := make(Tickets, 0, len(t))
-	for _, ticket := range t {
-		if ticket.CreatedAt.Time.Before(beforeTime) {
-			tickets = append(tickets, ticket)
-		}
-	}
-
-	return tickets
-}
-
-// ticketsCreatedAfterTime will return the tickets created after a specified time.
-// Passed tickets MUST be ordered by descending time, so recent tickets appear at start.
-func (t Tickets) ticketsCreatedAfterTime(afterTime time.Time) Tickets {
-	tickets := make(Tickets, 0, len(t))
-	for _, ticket := range t {
-		if ticket.CreatedAt.Time.After(afterTime) {
-			tickets = append(tickets, ticket)
-		}
-	}
-
-	return tickets
 }
 
 var spaceRegex = regexp.MustCompile(`\s+`)

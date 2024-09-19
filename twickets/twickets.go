@@ -111,12 +111,20 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 		earliestTicketTime = feedTickets[len(feedTickets)-1].CreatedAt.Time
 	}
 
-	// Only return tickets asked for
+	// Only return number of tickets requested
 	if len(tickets) > input.NumTickets {
 		tickets = tickets[:input.NumTickets]
 	}
+
+	// Only return tickets created after the requested time
 	if !input.CreatedAfter.IsZero() {
-		tickets = tickets.ticketsCreatedAfterTime(input.CreatedAfter)
+		filteredTickets := make(Tickets, 0, len(tickets))
+		for _, ticket := range tickets {
+			if ticket.CreatedAt.Time.After(input.CreatedAfter) {
+				filteredTickets = append(filteredTickets, ticket)
+			}
+		}
+		tickets = filteredTickets
 	}
 
 	return tickets, nil

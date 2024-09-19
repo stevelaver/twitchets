@@ -15,7 +15,7 @@ type Filter struct {
 	Discount   float64  `json:"discount"`
 }
 
-func (t Filter) validate() error {
+func (t Filter) Validate() error {
 	if t.Name == "" {
 		return errors.New("event name must be set")
 	}
@@ -36,11 +36,7 @@ func matchesEventName(ticket Ticket, eventName string) bool {
 	desiredEventName := normaliseEventName(eventName)
 
 	similarity := strutil.Similarity(ticketEventName, desiredEventName, metrics.NewJaroWinkler())
-	if similarity >= 0.85 {
-		return true
-	}
-
-	return false
+	return similarity >= 0.85
 }
 
 // matchesRegions determines whether a tickets matches any of desired regions
