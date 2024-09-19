@@ -6,9 +6,8 @@ regions:
 events:
   - name: Event 1
   - name: Event 2
-    num_tickets: 1
+    regions: [GBLO]
   - name: Event 3
-    regions:
-      - GBLO
+    num_tickets: 1
   - name: Event 4
     discount: 15

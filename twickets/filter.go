@@ -9,9 +9,10 @@ import (
 )
 
 type Filter struct {
-	Name     string   `json:"name"`
-	Regions  []Region `json:"regions"`
-	Discount float64  `json:"discount"`
+	Name       string   `json:"name"`
+	Regions    []Region `json:"regions"`
+	NumTickets int      `json:"num_tickets"`
+	Discount   float64  `json:"discount"`
 }
 
 func (t Filter) validate() error {
@@ -25,6 +26,7 @@ func (t Filter) validate() error {
 func (t Filter) TicketMatches(ticket Ticket) bool {
 	return matchesEventName(ticket, t.Name) &&
 		matchesRegions(ticket, t.Regions) &&
+		matchesNumTickets(ticket, t.NumTickets) &&
 		matchesDiscount(ticket, t.Discount)
 }
 
@@ -47,6 +49,14 @@ func matchesRegions(ticket Ticket, regions []Region) bool {
 		return true
 	}
 	return lo.Contains(regions, ticket.Event.Venue.Location.RegionCode)
+}
+
+// matchesNumTickets determines whether a tickets matches a desired number of tickets
+func matchesNumTickets(ticket Ticket, numTickets int) bool {
+	if numTickets <= 0 {
+		return true
+	}
+	return ticket.TicketQuantity == numTickets
 }
 
 // matchesDiscount determines whether a tickets matches a desired discount
