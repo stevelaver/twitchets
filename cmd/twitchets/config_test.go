@@ -21,10 +21,6 @@ func TestLoadConfig(t *testing.T) {
 
 	require.Equal(t, twickets.CountryUnitedKingdom, config.Country)
 
-	require.Len(t, config.Regions, 2)
-	require.Equal(t, twickets.RegionLondon, config.Regions[0])
-	require.Equal(t, twickets.RegionNorthWest, config.Regions[1])
-
 	require.Len(t, config.Events, 4)
 
 	// Event with only name set

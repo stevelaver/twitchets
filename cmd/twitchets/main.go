@@ -88,8 +88,7 @@ func fetchAndProcessTickets(
 	tickets, err := twicketsClient.FetchTickets(
 		context.Background(),
 		twickets.FetchTicketsInput{
-			Country: config.Country,
-			// Regions:    regions, // TODO reenable. See note in config variables.
+			Country:       config.Country,
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
 			NumTickets:    maxNumTickets,

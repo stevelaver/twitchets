@@ -12,7 +12,6 @@ import (
 
 type Config struct {
 	Country twickets.Country  `json:"country"`
-	Regions []twickets.Region `json:"regions"`
 	Events  []twickets.Filter `json:"events"`
 }
 
@@ -31,17 +30,6 @@ func (c *Config) parseKoanf(k *koanf.Koanf) error {
 		return fmt.Errorf("%s is not a valid country code", countryString)
 	}
 
-	// Parse regions
-	regionStrings := k.Strings("regions")
-	regions := make([]twickets.Region, 0, len(regionStrings))
-	for _, regionString := range regionStrings {
-		region := twickets.Regions.Parse(regionString)
-		if region == nil {
-			return fmt.Errorf("%s is not a valid region code", countryString)
-		}
-		regions = append(regions, *region)
-	}
-
 	// Parse filters
 	var events []twickets.Filter
 	err := k.UnmarshalWithConf(
@@ -53,7 +41,6 @@ func (c *Config) parseKoanf(k *koanf.Koanf) error {
 	}
 
 	c.Country = *country
-	c.Regions = regions
 	c.Events = events
 
 	return nil
