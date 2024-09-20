@@ -9,7 +9,7 @@ import (
 
 type Country enum.Member[string]
 
-func (d *Country) UnmarshalJSON(data []byte) error {
+func (c *Country) UnmarshalJSON(data []byte) error {
 	var countryString string
 	err := json.Unmarshal(data, &countryString)
 	if err != nil {
@@ -20,7 +20,19 @@ func (d *Country) UnmarshalJSON(data []byte) error {
 	if country == nil {
 		return fmt.Errorf("country '%s' is not valid", countryString)
 	}
-	*d = *country
+
+	*c = *country
+	return nil
+}
+
+func (c *Country) UnmarshalText(data []byte) error {
+	countryString := string(data)
+	country := Countries.Parse(countryString)
+	if country == nil {
+		return fmt.Errorf("country '%s' is not valid", countryString)
+	}
+
+	*c = *country
 	return nil
 }
 

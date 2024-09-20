@@ -15,41 +15,42 @@ type Config struct {
 	Events  []twickets.Filter `json:"events"`
 }
 
-func (c *Config) parseKoanf(k *koanf.Koanf) error {
-	if k == nil {
-		return nil
-	}
-
-	// Parse country
-	countryString := k.String("country")
-	if countryString == "" {
+func (c Config) Validate() error {
+	if c.Country.Value == "" {
 		return errors.New("country must be set")
 	}
-	country := twickets.Countries.Parse(countryString)
-	if country == nil {
-		return fmt.Errorf("%s is not a valid country code", countryString)
-	}
 
-	// Parse filters
-	var events []twickets.Filter
-	err := k.UnmarshalWithConf(
-		"events", &events,
-		koanf.UnmarshalConf{Tag: `json`},
-	)
-	if err != nil {
-		return fmt.Errorf("invalid events: %w", err)
-	}
-
-	for _, event := range events {
-		err = event.Validate()
+	for _, event := range c.Events {
+		err := event.Validate()
 		if err != nil {
 			return err
 		}
 	}
 
-	c.Country = *country
-	c.Events = events
+	return nil
+}
 
+func (c *Config) parseKoanf(k *koanf.Koanf) error {
+	if k == nil {
+		return nil
+	}
+
+	// Parse config
+	var config Config
+	err := k.UnmarshalWithConf(
+		"", &config,
+		koanf.UnmarshalConf{Tag: `json`},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+
+	err = config.Validate()
+	if err != nil {
+		return fmt.Errorf("invalid config: %w", err)
+	}
+
+	*c = config
 	return nil
 }
 
