@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/ahobsonsayers/twitchets/twickets/utils"
 )
 
 const TwicketsURL = "https://www.twickets.live"
@@ -28,7 +26,7 @@ func init() {
 // TicketURL gets a ticket url
 // https://www.twickets.live/app/block/<ticketId>,<numTickets>
 func TicketURL(ticketId string, numTickets int) string {
-	ticketUrl := utils.CloneURL(twicketsUrl)
+	ticketUrl := cloneURL(twicketsUrl)
 	ticketUrl = ticketUrl.JoinPath("app", "block", fmt.Sprintf("%s,%d", ticketId, numTickets))
 	return ticketUrl.String()
 }
@@ -65,7 +63,7 @@ func FeedUrl(input FeedUrlInput) (string, error) {
 		return "", fmt.Errorf("invalid input parameters: %w", err)
 	}
 
-	feedUrl := utils.CloneURL(twicketsUrl)
+	feedUrl := cloneURL(twicketsUrl)
 	feedUrl = feedUrl.JoinPath("services", "catalogue")
 
 	// Set query params
@@ -116,4 +114,19 @@ func apiLocationQuery(country Country, regions ...Region) string {
 	}
 
 	return strings.Join(queryParts, ",")
+}
+
+// cloneUrl clones a url. Copied directly from net/http internals
+// See: https://github.com/golang/go/blob/go1.19/src/net/http/clone.go#L22
+func cloneURL(u *url.URL) *url.URL {
+	if u == nil {
+		return nil
+	}
+	u2 := new(url.URL)
+	*u2 = *u
+	if u.User != nil {
+		u2.User = new(url.Userinfo)
+		*u2.User = *u.User
+	}
+	return u2
 }
