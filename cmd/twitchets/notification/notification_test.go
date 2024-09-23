@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
-	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/stretchr/testify/require"
 )
 

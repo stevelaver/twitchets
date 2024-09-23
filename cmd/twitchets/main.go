@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/twickets"
-	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/joho/godotenv"
 )
 
