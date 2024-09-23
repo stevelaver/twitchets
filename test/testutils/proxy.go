@@ -79,21 +79,23 @@ func (t *proxyTransport) RoundTrip(request *http.Request) (*http.Response, error
 func downloadProxyLists(proxyListUrls []string) ([]*url.URL, error) {
 	proxyUrls := []*url.URL{}
 	for _, proxyListUrl := range proxyListUrls {
-		resp, err := http.Get(proxyListUrl)
+		proxyListProxyUrls, err := downloadProxyList(proxyListUrl)
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
-
-		proxyListProxyUrls, err := parseProxyList(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-
 		proxyUrls = append(proxyUrls, proxyListProxyUrls...)
 	}
 
 	return proxyUrls, nil
+}
+
+func downloadProxyList(proxyListUrl string) ([]*url.URL, error) {
+	resp, err := http.Get(proxyListUrl)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return parseProxyList(resp.Body)
 }
 
 func parseProxyList(reader io.Reader) ([]*url.URL, error) {
