@@ -1,6 +1,7 @@
 package twickets
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
@@ -11,10 +12,7 @@ import (
 	"github.com/ahobsonsayers/twitchets/twickets/utils"
 )
 
-const (
-	TwicketsURL    = "https://www.twickets.live"
-	TwicketsAPIKey = "83d6ec0c-54bb-4da3-b2a1-f3cb47b984f1"
-)
+const TwicketsURL = "https://www.twickets.live"
 
 var twicketsUrl *url.URL // https://www.twickets.live
 
@@ -35,20 +33,38 @@ func TicketURL(ticketId string, numTickets int) string {
 	return ticketUrl.String()
 }
 
-type FeedUrlParams struct {
+type FeedUrlInput struct {
+	// Required fields
+	APIKey  string
 	Country Country
-	Regions []Region
 
-	// Number of tickets to fetch in the feed.
-	NumTickets int
-
-	// Time to get tickets before.
-	BeforeTime time.Time
+	// Optional fields
+	Regions    []Region  // Defaults to all country regions
+	NumTickets int       // Defaults to 10 tickets
+	BeforeTime time.Time // Defaults to current time
 }
 
-// FeedUrl gets the url of the feed with the given params.
+func (f FeedUrlInput) validate() error {
+	if f.APIKey == "" {
+		return errors.New("api key must be set")
+	}
+	if f.Country.Value == "" {
+		return errors.New("country must be set")
+	}
+	if !Countries.Contains(f.Country) {
+		return fmt.Errorf("country '%s' is not valid", f.Country)
+	}
+	return nil
+}
+
+// FeedUrl gets the url of a feed of tickets
 // E.g. https://www.twickets.live/services/catalogue?q=countryCode=GB&count=100&api_key=<api_key>
-func FeedUrl(input FeedUrlParams) string {
+func FeedUrl(input FeedUrlInput) (string, error) {
+	err := input.validate()
+	if err != nil {
+		return "", fmt.Errorf("invalid input parameters: %w", err)
+	}
+
 	feedUrl := utils.CloneURL(twicketsUrl)
 	feedUrl = feedUrl.JoinPath("services", "catalogue")
 
@@ -70,7 +86,7 @@ func FeedUrl(input FeedUrlParams) string {
 		queryParams.Set("count", count)
 	}
 
-	queryParams.Set("api_key", TwicketsAPIKey)
+	queryParams.Set("api_key", input.APIKey)
 
 	// Set query
 	encodedQuery := queryParams.Encode()
@@ -78,7 +94,7 @@ func FeedUrl(input FeedUrlParams) string {
 	encodedQuery = strings.ReplaceAll(encodedQuery, "%2C", ",")
 	feedUrl.RawQuery = encodedQuery
 
-	return feedUrl.String()
+	return feedUrl.String(), nil
 }
 
 // apiLocationQuery converts a country and selection of regions to an api query string

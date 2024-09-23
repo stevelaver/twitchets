@@ -13,7 +13,7 @@ import (
 func TestGotifySendTicketMessage(t *testing.T) {
 	testutils.SkipIfCI(t, "No env set in CI. Fix")
 
-	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load(testutils.ProjectDirectoryJoin(t, ".env"))
 
 	gotifyUrl := os.Getenv("GOTIFY_URL")
 	require.NotEmpty(t, gotifyUrl, "GOTIFY_URL is not set")

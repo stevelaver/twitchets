@@ -8,14 +8,12 @@ import (
 	"github.com/ahobsonsayers/twitchets/twickets/notification"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/require"
-	"heckel.io/ntfy/log"
 )
 
 func TestNtfySendTicketMessage(t *testing.T) {
 	testutils.SkipIfCI(t, "No env set in CI. Fix")
 
-	log.SetLevel(log.DebugLevel)
-	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load(testutils.ProjectDirectoryJoin(t, ".env"))
 
 	ntfyUrl := os.Getenv("NTFY_URL")
 	require.NotEmpty(t, ntfyUrl, "NTFY_URL is not set")

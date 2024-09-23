@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// GetProjectDirectory gets the directory of the project being worked on,
+// ProjectDirectory returns the directory of the project being worked on,
 // by walking the tree upwards until it finds a go.mod file.
-func GetProjectDirectory(t *testing.T) string {
+func ProjectDirectory(t *testing.T) string {
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		require.NoError(t, err, "failed to get path of current working directory")
@@ -27,4 +27,10 @@ func GetProjectDirectory(t *testing.T) string {
 	require.NotEqual(t, "failed find project directory", directory, "/")
 
 	return directory
+}
+
+// ProjectDirectoryJoinPath returns a path joined to the project directory.
+// See `ProjectDirectory` for more information
+func ProjectDirectoryJoin(t *testing.T, path string) string {
+	return filepath.Join(ProjectDirectory(t), path)
 }

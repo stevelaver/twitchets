@@ -12,11 +12,16 @@ import (
 )
 
 type Config struct {
+	APIKey       string            `json:"apiKey"`
 	GlobalConfig GlobalEventConfig `json:"global"`
 	EventConfig  []twickets.Filter `json:"events"`
 }
 
 func (c Config) Validate() error {
+	if c.APIKey == "" {
+		return errors.New("api key must be set")
+	}
+
 	err := c.GlobalConfig.Validate()
 	if err != nil {
 		return fmt.Errorf("global config is not valid: %w", err)
@@ -67,10 +72,13 @@ func (c GlobalEventConfig) Validate() error {
 	if c.Country.Value == "" {
 		return errors.New("country must be set")
 	}
+	if !twickets.Countries.Contains(c.Country) {
+		return fmt.Errorf("country '%s' is not valid", c.Country)
+	}
 
 	// Reuse the filter validation logic
 	globalFilter := twickets.Filter{
-		Name:       "global", // Name must be be set
+		Name:       "global", // Name must be be set - this is arbitrary
 		Regions:    c.Regions,
 		NumTickets: c.NumTickets,
 		Discount:   c.Discount,

@@ -22,9 +22,12 @@ var DefaultClient = NewClient(nil)
 // If both a number and time period are set, whichever condition
 // is met first will cause tickets fetching to stop.
 type FetchTicketsInput struct {
-	// Country is required
+	// Required fields
+	APIKey  string
 	Country Country
 
+	// Regions from which to fetch tickets from
+	// Defaults to all country regions
 	Regions []Region
 
 	// Number of tickets to fetch.
@@ -69,8 +72,14 @@ func (f *FetchTicketsInput) applyDefaults() {
 }
 
 func (f FetchTicketsInput) validate() error {
+	if f.APIKey == "" {
+		return errors.New("api key must be set")
+	}
 	if f.Country.Value == "" {
 		return errors.New("country must be set")
+	}
+	if !Countries.Contains(f.Country) {
+		return fmt.Errorf("country '%s' is not valid", f.Country)
 	}
 	if f.CreatedBefore.Before(f.CreatedAfter) {
 		return errors.New("created after time must be after the created before time")
@@ -86,7 +95,7 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 	input.applyDefaults()
 	err := input.validate()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid input: %w", err)
 	}
 
 	// Iterate through feeds until have equal to or more tickets than desired
@@ -95,12 +104,16 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 	for (input.NumTickets < 0 || len(tickets) < input.NumTickets) &&
 		earliestTicketTime.After(input.CreatedAfter) {
 
-		feedUrl := FeedUrl(FeedUrlParams{
+		feedUrl, err := FeedUrl(FeedUrlInput{
+			APIKey:     input.APIKey,
 			Country:    input.Country,
 			Regions:    input.Regions,
 			NumTickets: input.NumTicketsPerRequest,
 			BeforeTime: earliestTicketTime,
 		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get feed url: %w", err)
+		}
 
 		feedTickets, err := c.FetchFeedTickets(ctx, feedUrl)
 		if err != nil {
@@ -111,21 +124,9 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 		earliestTicketTime = feedTickets[len(feedTickets)-1].CreatedAt.Time
 	}
 
-	// Only return number of tickets requested
-	if len(tickets) > input.NumTickets {
-		tickets = tickets[:input.NumTickets]
-	}
-
-	// Only return tickets created after the requested time
-	if !input.CreatedAfter.IsZero() {
-		filteredTickets := make(Tickets, 0, len(tickets))
-		for _, ticket := range tickets {
-			if ticket.CreatedAt.Time.After(input.CreatedAfter) {
-				filteredTickets = append(filteredTickets, ticket)
-			}
-		}
-		tickets = filteredTickets
-	}
+	// Only return tickets requested
+	tickets = filterToNumTickets(tickets, input.NumTickets)
+	tickets = filterToCreatedAfter(tickets, input.CreatedAfter)
 
 	return tickets, nil
 }

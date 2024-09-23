@@ -88,7 +88,10 @@ func fetchAndProcessTickets(
 	tickets, err := twicketsClient.FetchTickets(
 		context.Background(),
 		twickets.FetchTicketsInput{
-			Country:       config.GlobalConfig.Country,
+			// Required
+			APIKey:  config.APIKey,
+			Country: config.GlobalConfig.Country,
+			// Optional
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
 			NumTickets:    maxNumTickets,

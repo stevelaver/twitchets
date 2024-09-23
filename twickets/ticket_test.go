@@ -12,7 +12,7 @@ import (
 )
 
 func getTestTickets(t *testing.T) twickets.Tickets {
-	projectDirectory := testutils.GetProjectDirectory(t)
+	projectDirectory := testutils.ProjectDirectory(t)
 	feedJsonFilePath := filepath.Join(projectDirectory, "test", "assets", "feed.json")
 
 	feedJsonFile, err := os.Open(feedJsonFilePath)

@@ -3,6 +3,7 @@ package twickets // nolint
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
@@ -77,4 +78,24 @@ func matchesDiscount(ticket Ticket, discount float64) bool {
 		return true
 	}
 	return ticket.Discount() >= discount
+}
+
+func filterToNumTickets(tickets Tickets, numTickets int) Tickets {
+	if len(tickets) > numTickets {
+		tickets = tickets[:numTickets]
+	}
+	return tickets
+}
+
+func filterToCreatedAfter(tickets Tickets, createdAfter time.Time) Tickets {
+	if createdAfter.IsZero() {
+		filteredTickets := make(Tickets, 0, len(tickets))
+		for _, ticket := range tickets {
+			if ticket.CreatedAt.Time.After(createdAfter) {
+				filteredTickets = append(filteredTickets, ticket)
+			}
+		}
+		tickets = filteredTickets
+	}
+	return tickets
 }

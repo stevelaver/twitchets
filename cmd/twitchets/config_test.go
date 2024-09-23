@@ -10,7 +10,7 @@ import (
 )
 
 func getTestConfigDirectory(t *testing.T) string {
-	projectDirectory := testutils.GetProjectDirectory(t)
+	projectDirectory := testutils.ProjectDirectory(t)
 	return filepath.Join(projectDirectory, "test", "assets", "config")
 }
 
