@@ -64,7 +64,7 @@ func (c Config) applyGlobalConfig() {
 type GlobalEventConfig struct {
 	Country    twickets.Country  `json:"country"`
 	Regions    []twickets.Region `json:"regions"`
-	NumTickets int               `json:"num_tickets"`
+	NumTickets int               `json:"numTickets"`
 	Discount   float64           `json:"discount"`
 }
 
