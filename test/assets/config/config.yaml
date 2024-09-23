@@ -1,12 +1,15 @@
-# TODO - format not yet supported
-country: GB
-regions:
-  - GBLO
-  - GBNW
+global:
+  country: GB
+  regions:
+    - GBLO
+    - GBNW
+  num_tickets: 2
+  discount: 25
+
 events:
   - name: Event 1
   - name: Event 2
-    regions: [GBLO]
+    regions: [GBSW]
   - name: Event 3
     num_tickets: 1
   - name: Event 4

@@ -2,6 +2,7 @@ package twickets // nolint
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
@@ -15,19 +16,34 @@ type Filter struct {
 	Discount   float64  `json:"discount"`
 }
 
-func (t Filter) Validate() error {
-	if t.Name == "" {
+func (f Filter) Validate() error {
+	if f.Name == "" {
 		return errors.New("event name must be set")
 	}
+
+	for _, region := range f.Regions {
+		if !Regions.Contains(region) {
+			return fmt.Errorf("region '%s' is not valid", region)
+		}
+	}
+
+	if f.NumTickets < 0 {
+		return errors.New("number of tickets cannot be negative")
+	}
+
+	if f.Discount < 0 {
+		return errors.New("discount cannot be negative")
+	}
+
 	return nil
 }
 
 // TicketMatches check is a ticket matches the filter
-func (t Filter) TicketMatches(ticket Ticket) bool {
-	return matchesEventName(ticket, t.Name) &&
-		matchesRegions(ticket, t.Regions) &&
-		matchesNumTickets(ticket, t.NumTickets) &&
-		matchesDiscount(ticket, t.Discount)
+func (f Filter) TicketMatches(ticket Ticket) bool {
+	return matchesEventName(ticket, f.Name) &&
+		matchesRegions(ticket, f.Regions) &&
+		matchesNumTickets(ticket, f.NumTickets) &&
+		matchesDiscount(ticket, f.Discount)
 }
 
 // matchesEventName returns whether a tickets matches a desired event name

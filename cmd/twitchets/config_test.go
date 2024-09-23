@@ -19,36 +19,52 @@ func TestLoadConfig(t *testing.T) {
 	config, err := LoadConfig(configPath)
 	require.NoError(t, err)
 
-	require.Equal(t, twickets.CountryUnitedKingdom, config.Country)
+	globalCountry := twickets.CountryUnitedKingdom
+	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
+	globalNumTickets := 2
+	globalDiscount := 25
 
-	require.Len(t, config.Events, 4)
+	require.Equal(t, globalCountry, config.GlobalConfig.Country)
+	require.Equal(t, globalRegions, config.GlobalConfig.Regions)
+	require.Equal(t, globalNumTickets, config.GlobalConfig.NumTickets)
+	require.InDelta(t, globalDiscount, config.GlobalConfig.Discount, 0)
+
+	require.Len(t, config.EventConfig, 4)
 
 	// Event with only name set
-	event1 := config.Events[0]
+	event1 := config.EventConfig[0]
+	// Global Config
+	require.Equal(t, globalRegions, event1.Regions)
+	require.Equal(t, globalNumTickets, event1.NumTickets)
+	require.InDelta(t, globalDiscount, event1.Discount, 0)
+	// Event config
 	require.Equal(t, "Event 1", event1.Name)
-	require.Equal(t, 0, event1.NumTickets)
-	require.Empty(t, event1.Regions)
-	require.Equal(t, event1.Discount, 0.0) // nolint: testifylint
 
 	// Event with regions set
-	event2 := config.Events[1]
+	event2 := config.EventConfig[1]
+	// Global Config
+	require.Equal(t, globalNumTickets, event2.NumTickets)
+	require.InDelta(t, globalDiscount, event2.Discount, 0)
+	// Event config
 	require.Equal(t, "Event 2", event2.Name)
 	require.Len(t, event2.Regions, 1)
-	require.Equal(t, event2.Regions[0], twickets.RegionLondon)
-	require.Equal(t, 0, event2.NumTickets)
-	require.Equal(t, event2.Discount, 0.0) // nolint: testifylint
+	require.Equal(t, event2.Regions[0], twickets.RegionSouthWest)
 
 	// Event with num tickets set
-	event3 := config.Events[2]
+	event3 := config.EventConfig[2]
+	// Global Config
+	require.Equal(t, globalRegions, event3.Regions)
+	require.InDelta(t, globalDiscount, event3.Discount, 0)
+	// Event config
 	require.Equal(t, "Event 3", event3.Name)
-	require.Empty(t, event3.Regions)
 	require.Equal(t, 1, event3.NumTickets)
-	require.Equal(t, event3.Discount, 0.0) // nolint: testifylint
 
 	// Event with discount set
-	event4 := config.Events[3]
+	event4 := config.EventConfig[3]
+	// Global Config
+	require.Equal(t, globalRegions, event4.Regions)
+	require.Equal(t, globalNumTickets, event4.NumTickets)
+	// Event config
 	require.Equal(t, "Event 4", event4.Name)
-	require.Equal(t, 0, event4.NumTickets)
-	require.Empty(t, event4.Regions)
-	require.Equal(t, event4.Discount, 15.0) // nolint: testifylint
+	require.InDelta(t, 15.0, event4.Discount, 0) // nolint: testifylint
 }
