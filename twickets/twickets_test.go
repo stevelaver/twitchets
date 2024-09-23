@@ -21,7 +21,10 @@ func TestGetLatestTickets(t *testing.T) {
 	require.NotEmpty(t, twicketsAPIKey, "TWICKETS_API_KEY is not set")
 
 	httpClient := http.DefaultClient
-	// httpClient, err := testutils.NewProxyClient(testutils.RoosterKidProxyListURL)
+	// httpClient, err := testutils.NewProxyClient(
+	// 	testutils.RoosterKidProxyListURL,
+	// 	testutils.ProxlifyProxyListURL,
+	// )
 	// require.NoError(t, err)
 
 	twicketsClient := twickets.NewClient(httpClient)

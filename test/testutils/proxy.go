@@ -20,8 +20,12 @@ const (
 	ProxlifyProxyListURL   = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt" // nolint: revive
 )
 
-func NewProxyClient(proxyListUrl string) (*http.Client, error) {
-	proxyTransport, err := newProxyTransport(proxyListUrl)
+func NewProxyClient(proxyListUrls ...string) (*http.Client, error) {
+	if len(proxyListUrls) == 0 {
+		return nil, fmt.Errorf("at least one proxy list url must be passed")
+	}
+
+	proxyTransport, err := newProxyTransport(proxyListUrls)
 	if err != nil {
 		return nil, err
 	}
@@ -29,21 +33,21 @@ func NewProxyClient(proxyListUrl string) (*http.Client, error) {
 	return &http.Client{Transport: proxyTransport}, nil
 }
 
-func newProxyTransport(proxyListUrl string) (http.RoundTripper, error) {
-	proxyList, err := downloadProxyList(proxyListUrl)
+func newProxyTransport(proxyListUrls []string) (http.RoundTripper, error) {
+	proxyLists, err := downloadProxyLists(proxyListUrls)
 	if err != nil {
 		return nil, fmt.Errorf("error downloading proxy list: %w", err)
 	}
 
-	proxyList = getWorkingProxies(proxyList, 2*time.Second)
-	if len(proxyList) == 0 {
+	proxyLists = getWorkingProxies(proxyLists, 2*time.Second)
+	if len(proxyLists) == 0 {
 		return nil, errors.New("none of the proxies in the proxy list are working")
 	}
 
-	startingIndex := rand.Intn(len(proxyList))
+	startingIndex := rand.Intn(len(proxyLists))
 
 	return &proxyTransport{
-		proxyList: proxyList,
+		proxyList: proxyLists,
 		index:     startingIndex,
 	}, nil
 }
@@ -72,14 +76,24 @@ func (t *proxyTransport) RoundTrip(request *http.Request) (*http.Response, error
 	return transport.RoundTrip(request)
 }
 
-func downloadProxyList(urlString string) ([]*url.URL, error) {
-	resp, err := http.Get(urlString)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+func downloadProxyLists(proxyListUrls []string) ([]*url.URL, error) {
+	proxyUrls := []*url.URL{}
+	for _, proxyListUrl := range proxyListUrls {
+		resp, err := http.Get(proxyListUrl)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
 
-	return parseProxyList(resp.Body)
+		proxyListProxyUrls, err := parseProxyList(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		proxyUrls = append(proxyUrls, proxyListProxyUrls...)
+	}
+
+	return proxyUrls, nil
 }
 
 func parseProxyList(reader io.Reader) ([]*url.URL, error) {
