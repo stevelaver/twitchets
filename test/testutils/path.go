@@ -31,6 +31,10 @@ func ProjectDirectory(t *testing.T) string {
 
 // ProjectDirectoryJoinPath returns a path joined to the project directory.
 // See `ProjectDirectory` for more information
-func ProjectDirectoryJoin(t *testing.T, path string) string {
-	return filepath.Join(ProjectDirectory(t), path)
+func ProjectDirectoryJoin(t *testing.T, pathElems ...string) string {
+	pathElems = append(
+		[]string{ProjectDirectory(t)},
+		pathElems...,
+	)
+	return filepath.Join(pathElems...)
 }

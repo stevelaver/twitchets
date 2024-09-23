@@ -29,10 +29,11 @@ type Client interface {
 }
 
 type MessageTemplateData struct {
-	Venue               string
-	Location            string
 	Date                string
 	Time                string
+	Venue               string
+	Location            string
+	TicketType          string // Standing, Stalls etc.
 	NumTickets          int
 	TotalTicketPrice    string
 	TotalPrice          string
@@ -42,21 +43,19 @@ type MessageTemplateData struct {
 	Link                string
 }
 
-func renderMessage(ticket twickets.Ticket, includeLink bool) (string, error) { // nolint: revive
+func RenderMessage(ticket twickets.Ticket) (string, error) {
 	templateData := MessageTemplateData{
-		Venue:               ticket.Event.Venue.Name,
-		Location:            ticket.Event.Venue.Location.Name,
 		Date:                ticket.Event.Date.Format("Monday 2 January 2006"),
 		Time:                ticket.Event.Time.Format("3:04pm"),
+		Venue:               ticket.Event.Venue.Name,
+		Location:            ticket.Event.Venue.Location.Name,
+		TicketType:          ticket.TicketType,
 		NumTickets:          ticket.TicketQuantity,
 		TotalTicketPrice:    ticket.TotalTicketPrice().String(),
 		TotalPrice:          ticket.TotalPrice().String(),
 		OriginalTicketPrice: ticket.OriginalTicketPrice().String(),
 		OriginalTotalPrice:  ticket.OriginalTotalPrice.String(),
 		Discount:            ticket.Discount(),
-	}
-	if includeLink {
-		templateData.Link = ticket.Link()
 	}
 
 	var buffer bytes.Buffer

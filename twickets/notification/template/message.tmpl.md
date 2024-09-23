@@ -1,7 +1,7 @@
 {{ .Venue }}, {{ .Location }}
 {{ .Date }} {{ .Time }}
 
-Number: {{ .NumTickets }} ticket(s)
+{{ .NumTickets }} ticket(s) - {{ .TicketType }}
 Ticket Price: {{ .TotalTicketPrice }}
 Total Price: {{ .TotalPrice }}
 {{ if lt .Discount 0.0 -}}
@@ -12,7 +12,3 @@ Discount: {{ printf "%.2f" .Discount }}%
 
 Original Ticket Price: {{ .OriginalTicketPrice }}
 Original Total Price: {{ .OriginalTotalPrice }}
-
-{{ if ne .Link "" -}}
-Buy: {{ .Link }}
-{{- end }}
