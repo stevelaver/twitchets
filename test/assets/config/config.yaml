@@ -8,7 +8,7 @@ global:
   numTickets: 2
   discount: 25
 
-events:
+tickets:
   - name: Event 1
   - name: Event 2
     regions: [GBSW]

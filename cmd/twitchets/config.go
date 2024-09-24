@@ -12,9 +12,9 @@ import (
 )
 
 type Config struct {
-	APIKey       string            `json:"apiKey"`
-	GlobalConfig GlobalEventConfig `json:"global"`
-	EventConfig  []twickets.Filter `json:"events"`
+	APIKey        string            `json:"apiKey"`
+	GlobalConfig  GlobalEventConfig `json:"global"`
+	TicketsConfig []twickets.Filter `json:"tickets"`
 }
 
 func (c Config) Validate() error {
@@ -27,7 +27,7 @@ func (c Config) Validate() error {
 		return fmt.Errorf("global config is not valid: %w", err)
 	}
 
-	for idx, event := range c.EventConfig {
+	for idx, event := range c.TicketsConfig {
 		err := event.Validate()
 		if err != nil {
 			return fmt.Errorf("event config at index [%d] is no valid: %w", idx, err)
@@ -38,7 +38,7 @@ func (c Config) Validate() error {
 }
 
 func (c Config) applyGlobalConfig() {
-	for idx, eventConfig := range c.EventConfig {
+	for idx, eventConfig := range c.TicketsConfig {
 		// Apply regions
 		if len(eventConfig.Regions) == 0 && len(c.GlobalConfig.Regions) != 0 {
 			eventConfig.Regions = c.GlobalConfig.Regions
@@ -54,7 +54,7 @@ func (c Config) applyGlobalConfig() {
 			eventConfig.Discount = c.GlobalConfig.Discount
 		}
 
-		c.EventConfig[idx] = eventConfig
+		c.TicketsConfig[idx] = eventConfig
 	}
 }
 
