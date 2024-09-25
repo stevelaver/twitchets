@@ -11,10 +11,10 @@ import (
 )
 
 type Filter struct {
-	Name       string   `json:"name"`
-	Regions    []Region `json:"regions"`
-	NumTickets int      `json:"numTickets"`
-	Discount   float64  `json:"discount"`
+	Name       string
+	Regions    []Region
+	NumTickets int
+	Discount   float64
 }
 
 func (f Filter) Validate() error {

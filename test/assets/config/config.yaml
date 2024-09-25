@@ -16,3 +16,7 @@ tickets:
     numTickets: 1
   - name: Event 4
     discount: 15
+  - name: Event 5
+    regions: []
+    numTickets: -1
+    discount: -1

@@ -5,60 +5,102 @@ import (
 
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLoadConfig(t *testing.T) {
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
-	config, err := LoadConfig(configPath)
+	actualConfig, err := LoadConfig(configPath)
 	require.NoError(t, err)
 
 	globalCountry := twickets.CountryUnitedKingdom
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
 	globalNumTickets := 2
-	globalDiscount := 25
+	globalDiscount := 25.0
 
-	require.Equal(t, globalCountry, config.GlobalConfig.Country)
-	require.Equal(t, globalRegions, config.GlobalConfig.Regions)
-	require.Equal(t, globalNumTickets, config.GlobalConfig.NumTickets)
-	require.InDelta(t, globalDiscount, config.GlobalConfig.Discount, 0)
+	expectedConfig := Config{
+		APIKey: "test",
+		GlobalConfig: GlobalEventConfig{
+			Country:    globalCountry,
+			Regions:    globalRegions,
+			NumTickets: globalNumTickets,
+			Discount:   globalDiscount,
+		},
+		TicketsConfig: []TicketConfig{
+			{
+				// Event with only name set
+				Name: "Event 1",
+			},
+			{
+				// Event with regions set
+				Name:    "Event 2",
+				Regions: []twickets.Region{twickets.RegionSouthWest},
+			},
+			{
+				// Event with num tickets set
+				Name:       "Event 3",
+				NumTickets: lo.ToPtr(1),
+			},
+			{
+				// Event with discount set
+				Name:     "Event 4",
+				Discount: lo.ToPtr(15.0),
+			},
+		},
+	}
 
-	require.Len(t, config.TicketsConfig, 4)
+	require.EqualValues(t, expectedConfig, actualConfig)
+}
 
-	// Event with only name set
-	event1 := config.TicketsConfig[0]
-	// Global Config
-	require.Equal(t, globalRegions, event1.Regions)
-	require.Equal(t, globalNumTickets, event1.NumTickets)
-	require.InDelta(t, globalDiscount, event1.Discount, 0)
-	// Event config
-	require.Equal(t, "Event 1", event1.Name)
+func TestConfigFilters(t *testing.T) {
+	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
+	config, err := LoadConfig(configPath)
+	require.NoError(t, err)
 
-	// Event with regions set
-	event2 := config.TicketsConfig[1]
-	// Global Config
-	require.Equal(t, globalNumTickets, event2.NumTickets)
-	require.InDelta(t, globalDiscount, event2.Discount, 0)
-	// Event config
-	require.Equal(t, "Event 2", event2.Name)
-	require.Len(t, event2.Regions, 1)
-	require.Equal(t, event2.Regions[0], twickets.RegionSouthWest)
+	actualFilters := config.Filters()
 
-	// Event with num tickets set
-	event3 := config.TicketsConfig[2]
-	// Global Config
-	require.Equal(t, globalRegions, event3.Regions)
-	require.InDelta(t, globalDiscount, event3.Discount, 0)
-	// Event config
-	require.Equal(t, "Event 3", event3.Name)
-	require.Equal(t, 1, event3.NumTickets)
+	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
+	globalNumTickets := 2
+	globalDiscount := 25.0
 
-	// Event with discount set
-	event4 := config.TicketsConfig[3]
-	// Global Config
-	require.Equal(t, globalRegions, event4.Regions)
-	require.Equal(t, globalNumTickets, event4.NumTickets)
-	// Event config
-	require.Equal(t, "Event 4", event4.Name)
-	require.InDelta(t, 15.0, event4.Discount, 0) // nolint: testifylint
+	expectedFilters := []twickets.Filter{
+		{
+			// Event with only name set
+			Name:       "Event 1",
+			Regions:    globalRegions,
+			NumTickets: globalNumTickets,
+			Discount:   globalDiscount,
+		},
+		{
+			// Event with regions set
+			Name:       "Event 2",
+			Regions:    []twickets.Region{twickets.RegionSouthWest},
+			NumTickets: globalNumTickets,
+			Discount:   globalDiscount,
+		},
+		{
+			// Event with num tickets set
+			Name:       "Event 3",
+			Regions:    globalRegions,
+			NumTickets: 1,
+			Discount:   globalDiscount,
+		},
+		{
+			// Event with discount set
+			Name:       "Event 4",
+			Regions:    globalRegions,
+			NumTickets: globalNumTickets,
+			Discount:   15.0,
+		},
+		{
+			// Event with globals unset
+			Name:       "Event 5",
+			Regions:    []twickets.Region{},
+			NumTickets: 0,
+			Discount:   0.0,
+		},
+	}
+
+	require.EqualValues(t, expectedFilters, actualFilters)
 }

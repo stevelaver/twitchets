@@ -106,7 +106,7 @@ func fetchAndProcessTickets(
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
-	filteredTickets := tickets.Filter(config.TicketsConfig)
+	filteredTickets := tickets.Filter(config.Filters())
 	for _, ticket := range filteredTickets {
 		slog.Info(
 			"Found tickets for monitored event",
