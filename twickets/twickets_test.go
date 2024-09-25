@@ -12,8 +12,6 @@ import (
 )
 
 func TestGetLatestTickets(t *testing.T) {
-	testutils.SkipIfCI(t, "Does not work in CI. Fix")
-
 	_ = godotenv.Load(testutils.ProjectDirectoryJoin(t, ".env"))
 
 	twicketsAPIKey := os.Getenv("TWICKETS_API_KEY")
