@@ -20,6 +20,7 @@ func TestGetLatestTickets(t *testing.T) {
 	httpClient, err := testutils.NewProxyClient(
 		testutils.RoosterKidProxyListURL,
 		testutils.ProxlifyProxyListURL,
+		testutils.TheSpeedXProxyListURL,
 	)
 	require.NoError(t, err)
 

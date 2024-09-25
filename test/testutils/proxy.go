@@ -18,6 +18,7 @@ import (
 const (
 	RoosterKidProxyListURL = "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt"
 	ProxlifyProxyListURL   = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt" // nolint: revive
+	TheSpeedXProxyListURL  = "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/refs/heads/master/http.txt"
 )
 
 func NewProxyClient(proxyListUrls ...string) (*http.Client, error) {
@@ -39,7 +40,7 @@ func newProxyTransport(proxyListUrls []string) (http.RoundTripper, error) {
 		return nil, fmt.Errorf("error downloading proxy list: %w", err)
 	}
 
-	proxyLists = getWorkingProxies(proxyLists, 5*time.Second)
+	proxyLists = getWorkingProxies(proxyLists, 2*time.Second)
 	if len(proxyLists) == 0 {
 		return nil, errors.New("none of the proxies in the proxy list are working")
 	}
