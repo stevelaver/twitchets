@@ -47,6 +47,13 @@ func TestLoadConfig(t *testing.T) {
 				Name:     "Event 4",
 				Discount: lo.ToPtr(15.0),
 			},
+			{
+				// Event with globals unset
+				Name:       "Event 5",
+				Regions:    []twickets.Region{},
+				NumTickets: lo.ToPtr(-1),
+				Discount:   lo.ToPtr(-1.0),
+			},
 		},
 	}
 
