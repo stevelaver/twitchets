@@ -2,7 +2,6 @@ package twickets_test
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"testing"
 
@@ -13,19 +12,16 @@ import (
 )
 
 func TestGetLatestTickets(t *testing.T) {
-	testutils.SkipIfCI(t, "Does not work in CI. Fix")
-
 	_ = godotenv.Load(testutils.ProjectDirectoryJoin(t, ".env"))
 
 	twicketsAPIKey := os.Getenv("TWICKETS_API_KEY")
 	require.NotEmpty(t, twicketsAPIKey, "TWICKETS_API_KEY is not set")
 
-	httpClient := http.DefaultClient
-	// httpClient, err := testutils.NewProxyClient(
-	// 	testutils.RoosterKidProxyListURL,
-	// 	testutils.ProxlifyProxyListURL,
-	// )
-	// require.NoError(t, err)
+	httpClient, err := testutils.NewProxyClient(
+		testutils.RoosterKidProxyListURL,
+		testutils.ProxlifyProxyListURL,
+	)
+	require.NoError(t, err)
 
 	twicketsClient := twickets.NewClient(httpClient)
 	tickets, err := twicketsClient.FetchTickets(

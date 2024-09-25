@@ -39,7 +39,7 @@ func newProxyTransport(proxyListUrls []string) (http.RoundTripper, error) {
 		return nil, fmt.Errorf("error downloading proxy list: %w", err)
 	}
 
-	proxyLists = getWorkingProxies(proxyLists, 2*time.Second)
+	proxyLists = getWorkingProxies(proxyLists, 5*time.Second)
 	if len(proxyLists) == 0 {
 		return nil, errors.New("none of the proxies in the proxy list are working")
 	}
