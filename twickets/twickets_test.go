@@ -2,8 +2,10 @@ package twickets_test
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
@@ -17,12 +19,19 @@ func TestGetLatestTickets(t *testing.T) {
 	twicketsAPIKey := os.Getenv("TWICKETS_API_KEY")
 	require.NotEmpty(t, twicketsAPIKey, "TWICKETS_API_KEY is not set")
 
-	httpClient, err := testutils.NewProxyClient(
-		testutils.RoosterKidProxyListURL,
-		testutils.ProxlifyProxyListURL,
-		testutils.TheSpeedXProxyListURL,
-	)
-	require.NoError(t, err)
+	var httpClient *http.Client
+	if !testutils.IsCI() {
+		httpClient = http.DefaultClient
+	} else {
+		var err error
+		httpClient, err = testutils.NewProxyClient(
+			testutils.ProxyClientConfig{
+				ProxyListUrls: testutils.ProxyListUrls,
+				TestTimeout:   5 * time.Second,
+			},
+		)
+		require.NoError(t, err)
+	}
 
 	twicketsClient := twickets.NewClient(httpClient)
 	tickets, err := twicketsClient.FetchTickets(

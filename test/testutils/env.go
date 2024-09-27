@@ -6,18 +6,22 @@ import (
 	"testing"
 )
 
-func SkipIfCI(t *testing.T, args ...any) {
+func IsCI() bool {
 	env, ok := os.LookupEnv("CI")
 	if !ok {
-		return
+		return false
 	}
 
 	isCI, err := strconv.ParseBool(env)
 	if err != nil {
-		return
+		return false
 	}
 
-	if isCI {
+	return isCI
+}
+
+func SkipIfCI(t *testing.T, args ...any) {
+	if IsCI() {
 		t.Skip(args...)
 	}
 }
