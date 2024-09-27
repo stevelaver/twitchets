@@ -46,13 +46,14 @@ jobs:
         id: tags
         run: |
           IFS=','
-          read -r -a old_tags <<<"${{ inputs.tags }}"
-          new_tags=()
-          for old_tag in "${old_tags[@]}"; do
-            new_tags+=("arranhs/twitchets:$old_tag")
+          read -r -a tags <<<"${{ inputs.tags }}"
+
+          full_tags=()
+          for tag in "${tags[@]}"; do
+            full_tags+=("arranhs/twitchets:$tag")
           done
-          tags="${new_tags[*]}"
-          echo "tags=$tags" >>"$GITHUB_OUTPUT"
+
+          echo "tags=${full_tags[*]}" >>"$GITHUB_OUTPUT"
 
       - name: Build and push
         uses: docker/build-push-action@v5

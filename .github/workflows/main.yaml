@@ -64,5 +64,5 @@ jobs:
     uses: ./.github/workflows/build_push.yaml
     with:
       commit: ${{ github.sha }}
-      tags: develop
+      tags: develop,${{ github.sha }}
     secrets: inherit
