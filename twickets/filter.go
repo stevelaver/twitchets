@@ -87,8 +87,8 @@ func filterToNumTickets(tickets Tickets, numTickets int) Tickets {
 	return tickets
 }
 
-func filterToCreatedAfter(tickets Tickets, createdAfter time.Time) Tickets {
-	if createdAfter.IsZero() {
+func FilterTicketsCreatedAfter(tickets Tickets, createdAfter time.Time) Tickets {
+	if !createdAfter.IsZero() {
 		filteredTickets := make(Tickets, 0, len(tickets))
 		for _, ticket := range tickets {
 			if ticket.CreatedAt.Time.After(createdAfter) {

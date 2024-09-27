@@ -126,7 +126,7 @@ func (c *Client) FetchTickets(ctx context.Context, input FetchTicketsInput) (Tic
 
 	// Only return tickets requested
 	tickets = filterToNumTickets(tickets, input.NumTickets)
-	tickets = filterToCreatedAfter(tickets, input.CreatedAfter)
+	tickets = FilterTicketsCreatedAfter(tickets, input.CreatedAfter)
 
 	return tickets, nil
 }

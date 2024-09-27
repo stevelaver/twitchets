@@ -2,6 +2,7 @@ package twickets_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/stretchr/testify/require"
@@ -55,4 +56,21 @@ func TestFilterName(t *testing.T) {
 		Name: wizardOfOzAsked,
 	}})
 	require.Empty(t, filteredTickets)
+}
+
+func TestFilterTicketsToCreatedAfter(t *testing.T) {
+	currentTime := time.Now()
+	tickets := twickets.Tickets{
+		{CreatedAt: twickets.UnixTime{currentTime.Add(-1 * time.Minute)}},
+		{CreatedAt: twickets.UnixTime{currentTime.Add(-2 * time.Minute)}},
+		{CreatedAt: twickets.UnixTime{currentTime.Add(-4 * time.Minute)}},
+		{CreatedAt: twickets.UnixTime{currentTime.Add(-5 * time.Minute)}},
+	}
+
+	filteredTickets := twickets.FilterTicketsCreatedAfter(
+		tickets,
+		currentTime.Add(-3*time.Minute),
+	)
+
+	require.Equal(t, tickets[0:2], filteredTickets)
 }
