@@ -1,7 +1,7 @@
 apiKey: test
+country: GB
 
 global:
-  country: GB
   regions:
     - GBLO
     - GBNW

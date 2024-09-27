@@ -14,15 +14,15 @@ func TestLoadConfig(t *testing.T) {
 	actualConfig, err := LoadConfig(configPath)
 	require.NoError(t, err)
 
-	globalCountry := twickets.CountryUnitedKingdom
+	country := twickets.CountryUnitedKingdom
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
 	expectedConfig := Config{
-		APIKey: "test",
+		APIKey:  "test",
+		Country: country,
 		GlobalConfig: GlobalEventConfig{
-			Country:    globalCountry,
 			Regions:    globalRegions,
 			NumTickets: globalNumTickets,
 			Discount:   globalDiscount,

@@ -90,7 +90,7 @@ func fetchAndProcessTickets(
 		twickets.FetchTicketsInput{
 			// Required
 			APIKey:  config.APIKey,
-			Country: config.GlobalConfig.Country,
+			Country: config.Country,
 			// Optional
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
@@ -101,7 +101,6 @@ func fetchAndProcessTickets(
 		slog.Error(err.Error())
 		return
 	}
-
 	if len(tickets) == maxNumTickets {
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
