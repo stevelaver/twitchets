@@ -11,15 +11,22 @@ import (
 )
 
 type Filter struct {
-	Name       string
-	Regions    []Region
-	NumTickets int
-	Discount   float64
+	Name           string
+	NameSimilarity float64
+	Regions        []Region
+	NumTickets     int
+	Discount       float64
 }
 
 func (f Filter) Validate() error {
 	if f.Name == "" {
 		return errors.New("event name must be set")
+	}
+
+	if f.NameSimilarity < 0 {
+		return errors.New("similarity cannot be negative")
+	} else if f.NameSimilarity > 100 {
+		return errors.New("similarity cannot above 100%")
 	}
 
 	for _, region := range f.Regions {
@@ -41,19 +48,25 @@ func (f Filter) Validate() error {
 
 // TicketMatches check is a ticket matches the filter
 func (f Filter) TicketMatches(ticket Ticket) bool {
-	return matchesEventName(ticket, f.Name) &&
+	return matchesEventName(ticket, f.Name, f.NameSimilarity) &&
 		matchesRegions(ticket, f.Regions) &&
 		matchesNumTickets(ticket, f.NumTickets) &&
 		matchesDiscount(ticket, f.Discount)
 }
 
 // matchesEventName returns whether a tickets matches a desired event name
-func matchesEventName(ticket Ticket, eventName string) bool {
+func matchesEventName(ticket Ticket, eventName string, similarity float64) bool {
 	ticketEventName := normaliseEventName(ticket.Event.Name)
 	desiredEventName := normaliseEventName(eventName)
 
-	similarity := strutil.Similarity(ticketEventName, desiredEventName, metrics.NewJaroWinkler())
-	return similarity >= 0.85
+	ticketSimilarity := strutil.Similarity(
+		ticketEventName, desiredEventName,
+		metrics.NewJaroWinkler(),
+	)
+	if similarity == 0 {
+		return ticketSimilarity >= 0.85
+	}
+	return ticketSimilarity >= similarity/100
 }
 
 // matchesRegions determines whether a tickets matches any of desired regions

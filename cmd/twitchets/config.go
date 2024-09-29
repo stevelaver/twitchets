@@ -52,6 +52,13 @@ func (c Config) Filters() []twickets.Filter {
 		var filter twickets.Filter
 		filter.Name = ticketConfig.Name
 
+		// Set name similarity
+		if ticketConfig.NameSimilarity == nil {
+			filter.NameSimilarity = c.GlobalConfig.NameSimilarity
+		} else if *ticketConfig.NameSimilarity > 0 {
+			filter.NameSimilarity = *ticketConfig.NameSimilarity
+		}
+
 		// Set regions
 		if ticketConfig.Regions == nil {
 			filter.Regions = c.GlobalConfig.Regions
@@ -83,20 +90,22 @@ func (c Config) Filters() []twickets.Filter {
 // unless an event explicitly overwrites its.
 // Country is required.
 type GlobalEventConfig struct {
-	Regions    []twickets.Region `json:"regions"`
-	NumTickets int               `json:"numTickets"`
-	Discount   float64           `json:"discount"`
+	NameSimilarity float64           `json:"nameSimilarity"`
+	Regions        []twickets.Region `json:"regions"`
+	NumTickets     int               `json:"numTickets"`
+	Discount       float64           `json:"discount"`
 }
 
 func (c GlobalEventConfig) Validate() error {
 	// Reuse the filter validation logic
-	globalFilter := twickets.Filter{
-		Name:       "global", // Name must be be set - this is arbitrary
-		Regions:    c.Regions,
-		NumTickets: c.NumTickets,
-		Discount:   c.Discount,
+	filter := twickets.Filter{
+		Name:           "global", // Name must be be set - this is arbitrary
+		NameSimilarity: c.NameSimilarity,
+		Regions:        c.Regions,
+		NumTickets:     c.NumTickets,
+		Discount:       c.Discount,
 	}
-	err := globalFilter.Validate()
+	err := filter.Validate()
 	if err != nil {
 		return err
 	}
@@ -105,10 +114,11 @@ func (c GlobalEventConfig) Validate() error {
 }
 
 type TicketConfig struct {
-	Name       string            `json:"name"`
-	Regions    []twickets.Region `json:"regions"`
-	NumTickets *int              `json:"numTickets"`
-	Discount   *float64          `json:"discount"`
+	Name           string            `json:"name"`
+	NameSimilarity *float64          `json:"nameSimilarity"`
+	Regions        []twickets.Region `json:"regions"`
+	NumTickets     *int              `json:"numTickets"`
+	Discount       *float64          `json:"discount"`
 }
 
 func (t TicketConfig) Validate() error {
