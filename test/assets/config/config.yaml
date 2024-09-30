@@ -2,25 +2,25 @@ apiKey: test
 country: GB
 
 global:
+  eventSimilarity: 75
   regions:
     - GBLO
     - GBNW
   numTickets: 2
   discount: 25
-  nameSimilarity: 75
 
 tickets:
-  - name: Event 1
-  - name: Event 2
+  - event: Event 1
+  - event: Event 2
+    eventSimilarity: 90
+  - event: Event 3
     regions: [GBSW]
-  - name: Event 3
+  - event: Event 4
     numTickets: 1
-  - name: Event 4
+  - event: Event 5
     discount: 15
-  - name: Event 5
-    nameSimilarity: 90
-  - name: Event 6
-    nameSimilarity: -1
+  - event: Event 6
+    eventSimilarity: -1
     regions: []
     numTickets: -1
     discount: -1

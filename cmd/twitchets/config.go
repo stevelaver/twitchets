@@ -50,13 +50,13 @@ func (c Config) Filters() []twickets.Filter {
 	for _, ticketConfig := range c.TicketsConfig {
 
 		var filter twickets.Filter
-		filter.Name = ticketConfig.Name
+		filter.Event = ticketConfig.Event
 
-		// Set name similarity
-		if ticketConfig.NameSimilarity == nil {
-			filter.NameSimilarity = c.GlobalConfig.NameSimilarity
-		} else if *ticketConfig.NameSimilarity > 0 {
-			filter.NameSimilarity = *ticketConfig.NameSimilarity
+		// Set event similarity
+		if ticketConfig.EventSimilarity == nil {
+			filter.EventSimilarity = c.GlobalConfig.EventSimilarity
+		} else if *ticketConfig.EventSimilarity > 0 {
+			filter.EventSimilarity = *ticketConfig.EventSimilarity
 		}
 
 		// Set regions
@@ -90,20 +90,20 @@ func (c Config) Filters() []twickets.Filter {
 // unless an event explicitly overwrites its.
 // Country is required.
 type GlobalEventConfig struct {
-	NameSimilarity float64           `json:"nameSimilarity"`
-	Regions        []twickets.Region `json:"regions"`
-	NumTickets     int               `json:"numTickets"`
-	Discount       float64           `json:"discount"`
+	EventSimilarity float64           `json:"eventSimilarity"`
+	Regions         []twickets.Region `json:"regions"`
+	NumTickets      int               `json:"numTickets"`
+	Discount        float64           `json:"discount"`
 }
 
 func (c GlobalEventConfig) Validate() error {
 	// Reuse the filter validation logic
 	filter := twickets.Filter{
-		Name:           "global", // Name must be be set - this is arbitrary
-		NameSimilarity: c.NameSimilarity,
-		Regions:        c.Regions,
-		NumTickets:     c.NumTickets,
-		Discount:       c.Discount,
+		Event:           "global", // Event must be be set - this is arbitrary
+		EventSimilarity: c.EventSimilarity,
+		Regions:         c.Regions,
+		NumTickets:      c.NumTickets,
+		Discount:        c.Discount,
 	}
 	err := filter.Validate()
 	if err != nil {
@@ -114,15 +114,15 @@ func (c GlobalEventConfig) Validate() error {
 }
 
 type TicketConfig struct {
-	Name           string            `json:"name"`
-	NameSimilarity *float64          `json:"nameSimilarity"`
-	Regions        []twickets.Region `json:"regions"`
-	NumTickets     *int              `json:"numTickets"`
-	Discount       *float64          `json:"discount"`
+	Event           string            `json:"event"`
+	EventSimilarity *float64          `json:"eventSimilarity"`
+	Regions         []twickets.Region `json:"regions"`
+	NumTickets      *int              `json:"numTickets"`
+	Discount        *float64          `json:"discount"`
 }
 
 func (t TicketConfig) Validate() error {
-	if t.Name == "" {
+	if t.Event == "" {
 		return errors.New("event name must be set")
 	}
 

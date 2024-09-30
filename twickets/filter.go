@@ -11,21 +11,21 @@ import (
 )
 
 type Filter struct {
-	Name           string
-	NameSimilarity float64
-	Regions        []Region
-	NumTickets     int
-	Discount       float64
+	Event           string
+	EventSimilarity float64
+	Regions         []Region
+	NumTickets      int
+	Discount        float64
 }
 
 func (f Filter) Validate() error {
-	if f.Name == "" {
+	if f.Event == "" {
 		return errors.New("event name must be set")
 	}
 
-	if f.NameSimilarity < 0 {
+	if f.EventSimilarity < 0 {
 		return errors.New("similarity cannot be negative")
-	} else if f.NameSimilarity > 100 {
+	} else if f.EventSimilarity > 100 {
 		return errors.New("similarity cannot above 100%")
 	}
 
@@ -48,7 +48,7 @@ func (f Filter) Validate() error {
 
 // TicketMatches check is a ticket matches the filter
 func (f Filter) TicketMatches(ticket Ticket) bool {
-	return matchesEventName(ticket, f.Name, f.NameSimilarity) &&
+	return matchesEventName(ticket, f.Event, f.EventSimilarity) &&
 		matchesRegions(ticket, f.Regions) &&
 		matchesNumTickets(ticket, f.NumTickets) &&
 		matchesDiscount(ticket, f.Discount)

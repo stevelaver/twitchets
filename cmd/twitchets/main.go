@@ -50,7 +50,7 @@ func main() {
 	// Event names
 	eventNames := make([]string, 0, len(config.TicketsConfig))
 	for _, event := range config.TicketsConfig {
-		eventNames = append(eventNames, event.Name)
+		eventNames = append(eventNames, event.Event)
 	}
 	slog.Info(
 		fmt.Sprintf("Monitoring: %s", strings.Join(eventNames, ", ")),
@@ -109,7 +109,7 @@ func fetchAndProcessTickets(
 	for _, ticket := range filteredTickets {
 		slog.Info(
 			"Found tickets for monitored event",
-			"name", ticket.Event.Name,
+			"eventName", ticket.Event.Name,
 			"numTickets", ticket.TicketQuantity,
 			"ticketPrice", ticket.TotalTicketPrice().String(),
 			"originalTicketPrice", ticket.OriginalTicketPrice().String(),

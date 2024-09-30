@@ -16,7 +16,7 @@ func TestLoadConfig(t *testing.T) {
 
 	country := twickets.CountryUnitedKingdom
 
-	globalNameSimilarity := 75.0
+	globalEventSimilarity := 75.0
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
@@ -25,43 +25,43 @@ func TestLoadConfig(t *testing.T) {
 		APIKey:  "test",
 		Country: country,
 		GlobalConfig: GlobalEventConfig{
-			NameSimilarity: globalNameSimilarity,
-			Regions:        globalRegions,
-			NumTickets:     globalNumTickets,
-			Discount:       globalDiscount,
+			EventSimilarity: globalEventSimilarity,
+			Regions:         globalRegions,
+			NumTickets:      globalNumTickets,
+			Discount:        globalDiscount,
 		},
 		TicketsConfig: []TicketConfig{
 			{
-				// Event with only name set
-				Name: "Event 1",
+				// Ticket with only event set
+				Event: "Event 1",
 			},
 			{
-				// Event with regions set
-				Name:    "Event 2",
+				// Ticket with name similarity set
+				Event:           "Event 2",
+				EventSimilarity: lo.ToPtr(90.0),
+			},
+			{
+				// Ticket with regions set
+				Event:   "Event 3",
 				Regions: []twickets.Region{twickets.RegionSouthWest},
 			},
 			{
-				// Event with num tickets set
-				Name:       "Event 3",
+				// Ticket with num tickets set
+				Event:      "Event 4",
 				NumTickets: lo.ToPtr(1),
 			},
 			{
-				// Event with discount set
-				Name:     "Event 4",
+				// Ticket with discount set
+				Event:    "Event 5",
 				Discount: lo.ToPtr(15.0),
 			},
 			{
-				// Event with name similarity set
-				Name:           "Event 5",
-				NameSimilarity: lo.ToPtr(90.0),
-			},
-			{
-				// Event with globals unset
-				Name:           "Event 6",
-				NameSimilarity: lo.ToPtr(-1.0),
-				Regions:        []twickets.Region{},
-				NumTickets:     lo.ToPtr(-1),
-				Discount:       lo.ToPtr(-1.0),
+				// Ticket with globals unset
+				Event:           "Event 6",
+				EventSimilarity: lo.ToPtr(-1.0),
+				Regions:         []twickets.Region{},
+				NumTickets:      lo.ToPtr(-1),
+				Discount:        lo.ToPtr(-1.0),
 			},
 		},
 	}
@@ -76,59 +76,59 @@ func TestConfigFilters(t *testing.T) {
 
 	actualFilters := config.Filters()
 
-	globalNameSimilarity := 75.0
+	globalEventSimilarity := 75.0
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
 	expectedFilters := []twickets.Filter{
 		{
-			// Event with only name set
-			Name:           "Event 1",
-			NameSimilarity: globalNameSimilarity,
-			Regions:        globalRegions,
-			NumTickets:     globalNumTickets,
-			Discount:       globalDiscount,
+			// Ticket with only event name set
+			Event:           "Event 1",
+			EventSimilarity: globalEventSimilarity,
+			Regions:         globalRegions,
+			NumTickets:      globalNumTickets,
+			Discount:        globalDiscount,
 		},
 		{
-			// Event with regions set
-			Name:           "Event 2",
-			NameSimilarity: globalNameSimilarity,
-			Regions:        []twickets.Region{twickets.RegionSouthWest},
-			NumTickets:     globalNumTickets,
-			Discount:       globalDiscount,
+			// Ticket with event similarity set
+			Event:           "Event 2",
+			EventSimilarity: 90.0,
+			Regions:         globalRegions,
+			NumTickets:      globalNumTickets,
+			Discount:        globalDiscount,
 		},
 		{
-			// Event with num tickets set
-			Name:           "Event 3",
-			NameSimilarity: globalNameSimilarity,
-			Regions:        globalRegions,
-			NumTickets:     1,
-			Discount:       globalDiscount,
+			// Ticket with regions set
+			Event:           "Event 3",
+			EventSimilarity: globalEventSimilarity,
+			Regions:         []twickets.Region{twickets.RegionSouthWest},
+			NumTickets:      globalNumTickets,
+			Discount:        globalDiscount,
 		},
 		{
-			// Event with discount set
-			Name:           "Event 4",
-			NameSimilarity: globalNameSimilarity,
-			Regions:        globalRegions,
-			NumTickets:     globalNumTickets,
-			Discount:       15.0,
+			// Ticket with num tickets set
+			Event:           "Event 4",
+			EventSimilarity: globalEventSimilarity,
+			Regions:         globalRegions,
+			NumTickets:      1,
+			Discount:        globalDiscount,
 		},
 		{
-			// Event with name similarity set
-			Name:           "Event 5",
-			NameSimilarity: 90.0,
-			Regions:        globalRegions,
-			NumTickets:     globalNumTickets,
-			Discount:       globalDiscount,
+			// Ticket with discount set
+			Event:           "Event 5",
+			EventSimilarity: globalEventSimilarity,
+			Regions:         globalRegions,
+			NumTickets:      globalNumTickets,
+			Discount:        15.0,
 		},
 		{
-			// Event with globals unset
-			Name:           "Event 6",
-			NameSimilarity: 0.0,
-			Regions:        []twickets.Region{},
-			NumTickets:     0,
-			Discount:       0.0,
+			// Ticket with globals unset
+			Event:           "Event 6",
+			EventSimilarity: 0.0,
+			Regions:         []twickets.Region{},
+			NumTickets:      0,
+			Discount:        0.0,
 		},
 	}
 
