@@ -33,17 +33,17 @@ func main() {
 		log.Fatalf("failed to get working directory:, %v", err)
 	}
 
+	// Twickets client
+	twicketsClient := twickets.NewClient(nil)
+
 	configPath := filepath.Join(cwd, "config.yaml")
 	conf, err := config.Load(configPath)
 	if err != nil {
 		log.Fatalf("config error:, %v", err)
 	}
 
-	// Twickets client
-	twicketsClient := twickets.NewClient(nil)
-
-	// Notification Client
-	notificationClient, err := notification.NewNtfyClientFromEnv()
+	// Notification Clients
+	notificationClients, err := conf.Notification.Clients()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,7 +58,7 @@ func main() {
 	)
 
 	// Initial execution
-	fetchAndProcessTickets(conf, twicketsClient, notificationClient)
+	fetchAndProcessTickets(twicketsClient, conf, notificationClients)
 
 	// Create ticker
 	ticker := time.NewTicker(refetchTime)
@@ -69,7 +69,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			fetchAndProcessTickets(conf, twicketsClient, notificationClient)
+			fetchAndProcessTickets(twicketsClient, conf, notificationClients)
 		case <-exitChan:
 			return
 		}
@@ -77,9 +77,9 @@ func main() {
 }
 
 func fetchAndProcessTickets(
-	conf config.Config,
 	twicketsClient *twickets.Client,
-	notificationClient notification.Client,
+	conf config.Config,
+	notificationClients []notification.Client,
 ) {
 	checkTime := time.Now()
 	defer func() {
@@ -117,12 +117,14 @@ func fetchAndProcessTickets(
 			"link", ticket.Link(),
 		)
 
-		err := notificationClient.SendTicketNotification(ticket)
-		if err != nil {
-			slog.Error(
-				"Failed to send notification",
-				"err", err,
-			)
+		for _, notificationClient := range notificationClients {
+			err := notificationClient.SendTicketNotification(ticket)
+			if err != nil {
+				slog.Error(
+					"Failed to send notification",
+					"err", err,
+				)
+			}
 		}
 	}
 }

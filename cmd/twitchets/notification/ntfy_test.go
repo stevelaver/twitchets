@@ -29,7 +29,7 @@ func TestNtfySendTicketMessage(t *testing.T) {
 
 	client, err := notification.NewNtfyClient(notification.NtfyConfig{
 		Url:      ntfyUrl,
-		User:     ntfyUser,
+		Username: ntfyUser,
 		Password: ntfyPassword,
 		Topic:    ntfyTopic,
 	})

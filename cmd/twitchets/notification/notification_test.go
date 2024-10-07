@@ -40,7 +40,7 @@ func testNotificationTicket() twickets.Ticket {
 }
 
 func TestRenderMessage(t *testing.T) {
-	expectedMessagePath := testutils.ProjectDirectoryJoin(t, "test", "assets", "message.md")
+	expectedMessagePath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "message.md")
 	expectedMessageBytes, err := os.ReadFile(expectedMessagePath)
 	require.NoError(t, err)
 	expectedMessage := string(expectedMessageBytes)

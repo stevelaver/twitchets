@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	APIKey        string            `json:"apiKey"`
-	Country       twickets.Country  `json:"country"`
-	GlobalConfig  GlobalEventConfig `json:"global"`
-	TicketsConfig []TicketConfig    `json:"tickets"`
+	APIKey        string             `json:"apiKey"`
+	Country       twickets.Country   `json:"country"`
+	Notification  NotificationConfig `json:"notification"`
+	GlobalConfig  GlobalEventConfig  `json:"global"`
+	TicketsConfig []TicketConfig     `json:"tickets"`
 }
 
 func (c Config) Validate() error {

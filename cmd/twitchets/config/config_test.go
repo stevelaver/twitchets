@@ -1,8 +1,10 @@
-package config
+package config_test
 
 import (
 	"testing"
 
+	"github.com/ahobsonsayers/twitchets/cmd/twitchets/config"
+	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/samber/lo"
@@ -10,8 +12,8 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
-	actualConfig, err := Load(configPath)
+	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
+	actualConfig, err := config.Load(configPath)
 	require.NoError(t, err)
 
 	country := twickets.CountryUnitedKingdom
@@ -21,16 +23,28 @@ func TestLoadConfig(t *testing.T) {
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
-	expectedConfig := Config{
+	expectedConfig := config.Config{
 		APIKey:  "test",
 		Country: country,
-		GlobalConfig: GlobalEventConfig{
+		GlobalConfig: config.GlobalEventConfig{
 			EventSimilarity: globalEventSimilarity,
 			Regions:         globalRegions,
 			NumTickets:      globalNumTickets,
 			Discount:        globalDiscount,
 		},
-		TicketsConfig: []TicketConfig{
+		Notification: config.NotificationConfig{
+			Ntfy: &notification.NtfyConfig{
+				Url:      "example.com",
+				Topic:    "test",
+				Username: "test",
+				Password: "test",
+			},
+			Telegram: &notification.TelegramConfig{
+				APIToken: "test",
+				ChatId:   1234,
+			},
+		},
+		TicketsConfig: []config.TicketConfig{
 			{
 				// Ticket with only event set
 				Event: "Event 1",
@@ -70,8 +84,8 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestConfigFilters(t *testing.T) {
-	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
-	config, err := Load(configPath)
+	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
+	config, err := config.Load(configPath)
 	require.NoError(t, err)
 
 	actualFilters := config.Filters()
