@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadConfig(t *testing.T) {
+func TestLoadConfig(t *testing.T) { // nolint: revive
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
 	actualConfig, err := config.Load(configPath)
 	require.NoError(t, err)
@@ -70,12 +70,18 @@ func TestLoadConfig(t *testing.T) {
 				Discount: lo.ToPtr(15.0),
 			},
 			{
+				// Ticket with notification set
+				Event:        "Event 6",
+				Notification: []config.NotificationType{config.NotificationTypeNtfy},
+			},
+			{
 				// Ticket with globals unset
-				Event:           "Event 6",
+				Event:           "Event 7",
 				EventSimilarity: lo.ToPtr(-1.0),
 				Regions:         []twickets.Region{},
 				NumTickets:      lo.ToPtr(-1),
 				Discount:        lo.ToPtr(-1.0),
+				Notification:    []config.NotificationType{},
 			},
 		},
 	}
@@ -83,7 +89,7 @@ func TestLoadConfig(t *testing.T) {
 	require.EqualValues(t, expectedConfig, actualConfig)
 }
 
-func TestCombineConfigs(t *testing.T) {
+func TestCombineConfigs(t *testing.T) { // nolint: revive
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
 	conf, err := config.Load(configPath)
 	require.NoError(t, err)
@@ -103,6 +109,7 @@ func TestCombineConfigs(t *testing.T) {
 			Regions:         globalRegions,
 			NumTickets:      &globalNumTickets,
 			Discount:        &globalDiscount,
+			Notification:    config.NotificationTypes.Members(),
 		},
 		{
 			// Ticket with event similarity set
@@ -111,6 +118,7 @@ func TestCombineConfigs(t *testing.T) {
 			Regions:         globalRegions,
 			NumTickets:      &globalNumTickets,
 			Discount:        &globalDiscount,
+			Notification:    config.NotificationTypes.Members(),
 		},
 		{
 			// Ticket with regions set
@@ -119,6 +127,7 @@ func TestCombineConfigs(t *testing.T) {
 			Regions:         []twickets.Region{twickets.RegionSouthWest},
 			NumTickets:      &globalNumTickets,
 			Discount:        &globalDiscount,
+			Notification:    config.NotificationTypes.Members(),
 		},
 		{
 			// Ticket with num tickets set
@@ -127,6 +136,7 @@ func TestCombineConfigs(t *testing.T) {
 			Regions:         globalRegions,
 			NumTickets:      lo.ToPtr(1),
 			Discount:        &globalDiscount,
+			Notification:    config.NotificationTypes.Members(),
 		},
 		{
 			// Ticket with discount set
@@ -135,14 +145,25 @@ func TestCombineConfigs(t *testing.T) {
 			Regions:         globalRegions,
 			NumTickets:      &globalNumTickets,
 			Discount:        lo.ToPtr(15.0),
+			Notification:    config.NotificationTypes.Members(),
+		},
+		{
+			// Ticket with notification set
+			Event:           "Event 6",
+			EventSimilarity: &globalEventSimilarity,
+			Regions:         globalRegions,
+			NumTickets:      &globalNumTickets,
+			Discount:        &globalDiscount,
+			Notification:    []config.NotificationType{config.NotificationTypeNtfy},
 		},
 		{
 			// Ticket with globals unset
-			Event:           "Event 6",
+			Event:           "Event 7",
 			EventSimilarity: nil,
 			Regions:         []twickets.Region{},
 			NumTickets:      nil,
 			Discount:        nil,
+			Notification:    []config.NotificationType{},
 		},
 	}
 

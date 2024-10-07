@@ -79,7 +79,7 @@ func main() {
 func fetchAndProcessTickets(
 	twicketsClient *twickets.Client,
 	conf config.Config,
-	notificationClients []notification.Client,
+	notificationClients map[config.NotificationType]notification.Client,
 ) {
 	checkTime := time.Now()
 	defer func() {
@@ -120,7 +120,13 @@ func fetchAndProcessTickets(
 				"link", ticket.Link(),
 			)
 
-			for _, notificationClient := range notificationClients {
+			for _, notificationType := range ticketConfig.Notification {
+
+				notificationClient, ok := notificationClients[notificationType]
+				if !ok {
+					continue
+				}
+
 				err := notificationClient.SendTicketNotification(ticket)
 				if err != nil {
 					slog.Error(

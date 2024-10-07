@@ -42,7 +42,7 @@ func (c Config) Validate() error {
 	return nil
 }
 
-func (c Config) CombineGlobalAndTicketConfig() []TicketConfig {
+func (c Config) CombineGlobalAndTicketConfig() []TicketConfig { // nolint: revive // TODO Remove nolint
 	combinedConfigs := make([]TicketConfig, 0, len(c.TicketsConfig))
 	for _, ticketConfig := range c.TicketsConfig {
 
@@ -75,6 +75,16 @@ func (c Config) CombineGlobalAndTicketConfig() []TicketConfig {
 			combinedConfig.Discount = &c.GlobalConfig.Discount
 		} else if *ticketConfig.Discount > 0 {
 			combinedConfig.Discount = ticketConfig.Discount
+		}
+
+		// Set notification methods
+		if ticketConfig.Notification == nil {
+			combinedConfig.Notification = c.GlobalConfig.Notification
+			if len(combinedConfig.Notification) == 0 {
+				combinedConfig.Notification = NotificationTypes.Members()
+			}
+		} else {
+			combinedConfig.Notification = ticketConfig.Notification
 		}
 
 		combinedConfigs = append(combinedConfigs, combinedConfig)

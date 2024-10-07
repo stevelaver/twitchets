@@ -8,11 +8,12 @@ import (
 )
 
 type TicketConfig struct {
-	Event           string            `json:"event"`
-	EventSimilarity *float64          `json:"eventSimilarity"`
-	Regions         []twickets.Region `json:"regions"`
-	NumTickets      *int              `json:"numTickets"`
-	Discount        *float64          `json:"discount"`
+	Event           string             `json:"event"`
+	EventSimilarity *float64           `json:"eventSimilarity"`
+	Regions         []twickets.Region  `json:"regions"`
+	NumTickets      *int               `json:"numTickets"`
+	Discount        *float64           `json:"discount"`
+	Notification    []NotificationType `json:"notification"`
 }
 
 func (t TicketConfig) Validate() error {
@@ -23,6 +24,12 @@ func (t TicketConfig) Validate() error {
 	for _, region := range t.Regions {
 		if !twickets.Regions.Contains(region) {
 			return fmt.Errorf("region '%s' is not valid", region)
+		}
+	}
+
+	for _, notification := range t.Notification {
+		if !NotificationTypes.Contains(notification) {
+			return fmt.Errorf("notification type '%s' is not valid", notification)
 		}
 	}
 

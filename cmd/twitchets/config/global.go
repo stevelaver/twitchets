@@ -6,10 +6,11 @@ import "github.com/ahobsonsayers/twitchets/twickets"
 // unless an event explicitly overwrites its.
 // Country is required.
 type GlobalEventConfig struct {
-	EventSimilarity float64           `json:"eventSimilarity"`
-	Regions         []twickets.Region `json:"regions"`
-	NumTickets      int               `json:"numTickets"`
-	Discount        float64           `json:"discount"`
+	EventSimilarity float64            `json:"eventSimilarity"`
+	Regions         []twickets.Region  `json:"regions"`
+	NumTickets      int                `json:"numTickets"`
+	Discount        float64            `json:"discount"`
+	Notification    []NotificationType `json:"notification"`
 }
 
 func (c GlobalEventConfig) Validate() error {
