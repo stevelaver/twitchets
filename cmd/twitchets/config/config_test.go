@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 
 func TestLoadConfig(t *testing.T) {
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
-	actualConfig, err := LoadConfig(configPath)
+	actualConfig, err := Load(configPath)
 	require.NoError(t, err)
 
 	country := twickets.CountryUnitedKingdom
@@ -71,7 +71,7 @@ func TestLoadConfig(t *testing.T) {
 
 func TestConfigFilters(t *testing.T) {
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "assets", "config", "config.yaml")
-	config, err := LoadConfig(configPath)
+	config, err := Load(configPath)
 	require.NoError(t, err)
 
 	actualFilters := config.Filters()

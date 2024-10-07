@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ahobsonsayers/twitchets/cmd/twitchets/config"
 	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/joho/godotenv"
@@ -33,7 +34,7 @@ func main() {
 	}
 
 	configPath := filepath.Join(cwd, "config.yaml")
-	config, err := LoadConfig(configPath)
+	conf, err := config.Load(configPath)
 	if err != nil {
 		log.Fatalf("config error:, %v", err)
 	}
@@ -48,8 +49,8 @@ func main() {
 	}
 
 	// Event names
-	eventNames := make([]string, 0, len(config.TicketsConfig))
-	for _, event := range config.TicketsConfig {
+	eventNames := make([]string, 0, len(conf.TicketsConfig))
+	for _, event := range conf.TicketsConfig {
 		eventNames = append(eventNames, event.Event)
 	}
 	slog.Info(
@@ -57,7 +58,7 @@ func main() {
 	)
 
 	// Initial execution
-	fetchAndProcessTickets(config, twicketsClient, notificationClient)
+	fetchAndProcessTickets(conf, twicketsClient, notificationClient)
 
 	// Create ticker
 	ticker := time.NewTicker(refetchTime)
@@ -68,7 +69,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			fetchAndProcessTickets(config, twicketsClient, notificationClient)
+			fetchAndProcessTickets(conf, twicketsClient, notificationClient)
 		case <-exitChan:
 			return
 		}
@@ -76,7 +77,7 @@ func main() {
 }
 
 func fetchAndProcessTickets(
-	config Config,
+	conf config.Config,
 	twicketsClient *twickets.Client,
 	notificationClient notification.Client,
 ) {
@@ -89,8 +90,8 @@ func fetchAndProcessTickets(
 		context.Background(),
 		twickets.FetchTicketsInput{
 			// Required
-			APIKey:  config.APIKey,
-			Country: config.Country,
+			APIKey:  conf.APIKey,
+			Country: conf.Country,
 			// Optional
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
@@ -105,7 +106,7 @@ func fetchAndProcessTickets(
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
-	filteredTickets := tickets.Filter(config.Filters())
+	filteredTickets := tickets.Filter(conf.Filters())
 	for _, ticket := range filteredTickets {
 		slog.Info(
 			"Found tickets for monitored event",
