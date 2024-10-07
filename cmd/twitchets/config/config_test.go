@@ -85,10 +85,10 @@ func TestLoadConfig(t *testing.T) {
 
 func TestConfigFilters(t *testing.T) {
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
-	config, err := config.Load(configPath)
+	conf, err := config.Load(configPath)
 	require.NoError(t, err)
 
-	actualFilters := config.Filters()
+	actualFilters := conf.Filters()
 
 	globalEventSimilarity := 75.0
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
