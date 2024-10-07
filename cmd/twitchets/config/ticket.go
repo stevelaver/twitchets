@@ -28,3 +28,26 @@ func (t TicketConfig) Validate() error {
 
 	return nil
 }
+
+func (t TicketConfig) Filter() twickets.Filter {
+	var filter twickets.Filter
+	filter.Event = t.Event
+
+	if t.EventSimilarity != nil {
+		filter.EventSimilarity = *t.EventSimilarity
+	}
+
+	if t.Regions != nil {
+		filter.Regions = t.Regions
+	}
+
+	if t.NumTickets != nil {
+		filter.NumTickets = *t.NumTickets
+	}
+
+	if t.Discount != nil {
+		filter.Discount = *t.Discount
+	}
+
+	return filter
+}

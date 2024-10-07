@@ -106,25 +106,30 @@ func fetchAndProcessTickets(
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
-	filteredTickets := tickets.Filter(conf.Filters()...)
-	for _, ticket := range filteredTickets {
-		slog.Info(
-			"Found tickets for monitored event",
-			"eventName", ticket.Event.Name,
-			"numTickets", ticket.TicketQuantity,
-			"ticketPrice", ticket.TotalTicketPrice().String(),
-			"originalTicketPrice", ticket.OriginalTicketPrice().String(),
-			"link", ticket.Link(),
-		)
+	ticketConfigs := conf.CombineGlobalAndTicketConfig()
+	for _, ticketConfig := range ticketConfigs {
+		filter := ticketConfig.Filter()
+		filteredTickets := tickets.Filter(filter)
+		for _, ticket := range filteredTickets {
+			slog.Info(
+				"Found tickets for monitored event",
+				"eventName", ticket.Event.Name,
+				"numTickets", ticket.TicketQuantity,
+				"ticketPrice", ticket.TotalTicketPrice().String(),
+				"originalTicketPrice", ticket.OriginalTicketPrice().String(),
+				"link", ticket.Link(),
+			)
 
-		for _, notificationClient := range notificationClients {
-			err := notificationClient.SendTicketNotification(ticket)
-			if err != nil {
-				slog.Error(
-					"Failed to send notification",
-					"err", err,
-				)
+			for _, notificationClient := range notificationClients {
+				err := notificationClient.SendTicketNotification(ticket)
+				if err != nil {
+					slog.Error(
+						"Failed to send notification",
+						"err", err,
+					)
+				}
 			}
+
 		}
 	}
 }

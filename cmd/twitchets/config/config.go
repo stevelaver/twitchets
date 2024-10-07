@@ -42,43 +42,43 @@ func (c Config) Validate() error {
 	return nil
 }
 
-func (c Config) Filters() []twickets.Filter {
-	filters := make([]twickets.Filter, 0, len(c.TicketsConfig))
+func (c Config) CombineGlobalAndTicketConfig() []TicketConfig {
+	combinedConfigs := make([]TicketConfig, 0, len(c.TicketsConfig))
 	for _, ticketConfig := range c.TicketsConfig {
 
-		var filter twickets.Filter
-		filter.Event = ticketConfig.Event
+		var combinedConfig TicketConfig
+		combinedConfig.Event = ticketConfig.Event
 
 		// Set name similarity
 		if ticketConfig.EventSimilarity == nil {
-			filter.EventSimilarity = c.GlobalConfig.EventSimilarity
+			combinedConfig.EventSimilarity = &c.GlobalConfig.EventSimilarity
 		} else if *ticketConfig.EventSimilarity > 0 {
-			filter.EventSimilarity = *ticketConfig.EventSimilarity
+			combinedConfig.EventSimilarity = ticketConfig.EventSimilarity
 		}
 
 		// Set regions
 		if ticketConfig.Regions == nil {
-			filter.Regions = c.GlobalConfig.Regions
+			combinedConfig.Regions = c.GlobalConfig.Regions
 		} else {
-			filter.Regions = ticketConfig.Regions
+			combinedConfig.Regions = ticketConfig.Regions
 		}
 
 		// Set num tickets
 		if ticketConfig.NumTickets == nil {
-			filter.NumTickets = c.GlobalConfig.NumTickets
+			combinedConfig.NumTickets = &c.GlobalConfig.NumTickets
 		} else if *ticketConfig.NumTickets > 0 {
-			filter.NumTickets = *ticketConfig.NumTickets
+			combinedConfig.NumTickets = ticketConfig.NumTickets
 		}
 
 		// Set discount
 		if ticketConfig.Discount == nil {
-			filter.Discount = c.GlobalConfig.Discount
+			combinedConfig.Discount = &c.GlobalConfig.Discount
 		} else if *ticketConfig.Discount > 0 {
-			filter.Discount = *ticketConfig.Discount
+			combinedConfig.Discount = ticketConfig.Discount
 		}
 
-		filters = append(filters, filter)
+		combinedConfigs = append(combinedConfigs, combinedConfig)
 	}
 
-	return filters
+	return combinedConfigs
 }

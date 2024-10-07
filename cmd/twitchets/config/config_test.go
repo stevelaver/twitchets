@@ -83,68 +83,68 @@ func TestLoadConfig(t *testing.T) {
 	require.EqualValues(t, expectedConfig, actualConfig)
 }
 
-func TestConfigFilters(t *testing.T) {
+func TestCombineConfigs(t *testing.T) {
 	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
 	conf, err := config.Load(configPath)
 	require.NoError(t, err)
 
-	actualFilters := conf.Filters()
+	actualCombinedConfigs := conf.CombineGlobalAndTicketConfig()
 
 	globalEventSimilarity := 75.0
 	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
-	expectedFilters := []twickets.Filter{
+	expectedCombinedConfigs := []config.TicketConfig{
 		{
 			// Ticket with only event name set
 			Event:           "Event 1",
-			EventSimilarity: globalEventSimilarity,
+			EventSimilarity: &globalEventSimilarity,
 			Regions:         globalRegions,
-			NumTickets:      globalNumTickets,
-			Discount:        globalDiscount,
+			NumTickets:      &globalNumTickets,
+			Discount:        &globalDiscount,
 		},
 		{
 			// Ticket with event similarity set
 			Event:           "Event 2",
-			EventSimilarity: 90.0,
+			EventSimilarity: lo.ToPtr(90.0),
 			Regions:         globalRegions,
-			NumTickets:      globalNumTickets,
-			Discount:        globalDiscount,
+			NumTickets:      &globalNumTickets,
+			Discount:        &globalDiscount,
 		},
 		{
 			// Ticket with regions set
 			Event:           "Event 3",
-			EventSimilarity: globalEventSimilarity,
+			EventSimilarity: &globalEventSimilarity,
 			Regions:         []twickets.Region{twickets.RegionSouthWest},
-			NumTickets:      globalNumTickets,
-			Discount:        globalDiscount,
+			NumTickets:      &globalNumTickets,
+			Discount:        &globalDiscount,
 		},
 		{
 			// Ticket with num tickets set
 			Event:           "Event 4",
-			EventSimilarity: globalEventSimilarity,
+			EventSimilarity: &globalEventSimilarity,
 			Regions:         globalRegions,
-			NumTickets:      1,
-			Discount:        globalDiscount,
+			NumTickets:      lo.ToPtr(1),
+			Discount:        &globalDiscount,
 		},
 		{
 			// Ticket with discount set
 			Event:           "Event 5",
-			EventSimilarity: globalEventSimilarity,
+			EventSimilarity: &globalEventSimilarity,
 			Regions:         globalRegions,
-			NumTickets:      globalNumTickets,
-			Discount:        15.0,
+			NumTickets:      &globalNumTickets,
+			Discount:        lo.ToPtr(15.0),
 		},
 		{
 			// Ticket with globals unset
 			Event:           "Event 6",
-			EventSimilarity: 0.0,
+			EventSimilarity: nil,
 			Regions:         []twickets.Region{},
-			NumTickets:      0,
-			Discount:        0.0,
+			NumTickets:      nil,
+			Discount:        nil,
 		},
 	}
 
-	require.EqualValues(t, expectedFilters, actualFilters)
+	require.EqualValues(t, expectedCombinedConfigs, actualCombinedConfigs)
 }
