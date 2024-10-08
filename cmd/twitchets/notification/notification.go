@@ -66,3 +66,17 @@ func RenderMessage(ticket twickets.Ticket) (string, error) {
 
 	return buffer.String(), nil
 }
+
+func RenderMessageWithMarkdownLink(ticket twickets.Ticket) (string, error) {
+	messageWithoutLink, err := RenderMessage(ticket)
+	if err != nil {
+		return "", err
+	}
+
+	messageWithLink := fmt.Sprintf(
+		"%s\n[Buy Link](%s)",
+		messageWithoutLink, ticket.Link(),
+	)
+
+	return messageWithLink, nil
+}
