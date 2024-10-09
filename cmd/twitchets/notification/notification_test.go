@@ -48,7 +48,7 @@ func TestRenderMessage(t *testing.T) {
 	expectedMessage := string(expectedMessageBytes)
 
 	tickets := testNotificationTicket()
-	actualMessage, err := notification.RenderMessage(tickets, nil)
+	actualMessage, err := notification.RenderMessage(tickets)
 	require.NoError(t, err)
 
 	require.Equal(t, expectedMessage, actualMessage)
@@ -63,10 +63,11 @@ func TestRenderMessageWithHeaderAndFooter(t *testing.T) {
 	expectedMessage := string(expectedMessageBytes)
 
 	tickets := testNotificationTicket()
-	actualMessage, err := notification.RenderMessage(tickets, &notification.RenderMessageConfig{
-		IncludeHeader: true,
-		IncludeFooter: true,
-	})
+	actualMessage, err := notification.RenderMessage(
+		tickets,
+		notification.WithHeader(),
+		notification.WithFooter(),
+	)
 	require.NoError(t, err)
 
 	require.Equal(t, expectedMessage, actualMessage)

@@ -50,15 +50,37 @@ type MessageTemplateData struct {
 	Link string
 }
 
-type RenderMessageConfig struct {
-	// Whether to include event name
-	IncludeHeader bool
-
-	// Whether to include buy link
-	IncludeFooter bool
+type renderMessageConfig struct {
+	includeHeader bool
+	includeFooter bool
 }
 
-func RenderMessage(ticket twickets.Ticket, config *RenderMessageConfig) (string, error) {
+func (c *renderMessageConfig) applyOptions(options ...RenderMessageOption) {
+	for _, option := range options {
+		option(c)
+	}
+}
+
+type RenderMessageOption func(*renderMessageConfig)
+
+// Whether to include event name header in message
+func WithHeader() RenderMessageOption {
+	return func(o *renderMessageConfig) {
+		o.includeHeader = true
+	}
+}
+
+// Whether to include buy link footer in message
+func WithFooter() RenderMessageOption {
+	return func(o *renderMessageConfig) {
+		o.includeFooter = true
+	}
+}
+
+func RenderMessage(ticket twickets.Ticket, options ...RenderMessageOption) (string, error) {
+	config := &renderMessageConfig{}
+	config.applyOptions(options...)
+
 	templateData := MessageTemplateData{
 		Date:                ticket.Event.Date.Format("Monday 2 January 2006"),
 		Time:                ticket.Event.Time.Format("3:04pm"),
@@ -73,15 +95,13 @@ func RenderMessage(ticket twickets.Ticket, config *RenderMessageConfig) (string,
 		Discount:            ticket.Discount(),
 	}
 
-	// add optional header and footers
-	if config != nil {
-		if config.IncludeHeader {
-			templateData.Event = ticket.Event.Name
-		}
+	// Add optional header and footers
+	if config.includeHeader {
+		templateData.Event = ticket.Event.Name
+	}
 
-		if config.IncludeFooter {
-			templateData.Link = ticket.Link()
-		}
+	if config.includeFooter {
+		templateData.Link = ticket.Link()
 	}
 
 	var buffer bytes.Buffer

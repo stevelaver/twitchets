@@ -13,10 +13,7 @@ type TelegramClient struct {
 var _ Client = TelegramClient{}
 
 func (c TelegramClient) SendTicketNotification(ticket twickets.Ticket) error {
-	messageBody, err := RenderMessage(ticket, &RenderMessageConfig{
-		IncludeHeader: true,
-		IncludeFooter: true,
-	})
+	messageBody, err := RenderMessage(ticket, WithHeader(), WithFooter())
 	if err != nil {
 		return err
 	}

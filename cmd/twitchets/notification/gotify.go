@@ -23,9 +23,7 @@ type GotifyClient struct {
 var _ Client = GotifyClient{}
 
 func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
-	notificationMessage, err := RenderMessage(ticket, &RenderMessageConfig{
-		IncludeFooter: true,
-	})
+	notificationMessage, err := RenderMessage(ticket, WithFooter())
 	if err != nil {
 		return err
 	}
