@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"strings"
 	"text/template"
 
 	"github.com/ahobsonsayers/twitchets/twickets"
@@ -29,6 +30,10 @@ type Client interface {
 }
 
 type MessageTemplateData struct {
+	// Header
+	Event string
+
+	// Body
 	Date                string
 	Time                string
 	Venue               string
@@ -40,10 +45,20 @@ type MessageTemplateData struct {
 	OriginalTicketPrice string
 	OriginalTotalPrice  string
 	Discount            float64
-	Link                string
+
+	// Footer
+	Link string
 }
 
-func RenderMessage(ticket twickets.Ticket) (string, error) {
+type RenderMessageConfig struct {
+	// Whether to include event name
+	IncludeHeader bool
+
+	// Whether to include buy link
+	IncludeFooter bool
+}
+
+func RenderMessage(ticket twickets.Ticket, config *RenderMessageConfig) (string, error) {
 	templateData := MessageTemplateData{
 		Date:                ticket.Event.Date.Format("Monday 2 January 2006"),
 		Time:                ticket.Event.Time.Format("3:04pm"),
@@ -58,25 +73,25 @@ func RenderMessage(ticket twickets.Ticket) (string, error) {
 		Discount:            ticket.Discount(),
 	}
 
+	// add optional header and footers
+	if config != nil {
+		if config.IncludeHeader {
+			templateData.Event = ticket.Event.Name
+		}
+
+		if config.IncludeFooter {
+			templateData.Link = ticket.Link()
+		}
+	}
+
 	var buffer bytes.Buffer
 	err := messageTemplate.Execute(&buffer, templateData)
 	if err != nil {
 		return "", fmt.Errorf("failed to render notification message template:, %w", err)
 	}
 
-	return buffer.String(), nil
-}
+	message := buffer.String()
+	message = strings.TrimSpace(message)
 
-func RenderMessageWithMarkdownLink(ticket twickets.Ticket) (string, error) {
-	messageWithoutLink, err := RenderMessage(ticket)
-	if err != nil {
-		return "", err
-	}
-
-	messageWithLink := fmt.Sprintf(
-		"%s\n[Buy Link](%s)",
-		messageWithoutLink, ticket.Link(),
-	)
-
-	return messageWithLink, nil
+	return message, nil
 }

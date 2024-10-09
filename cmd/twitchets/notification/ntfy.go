@@ -21,7 +21,7 @@ type NtfyClient struct {
 var _ Client = NtfyClient{}
 
 func (c NtfyClient) SendTicketNotification(ticket twickets.Ticket) error {
-	notificationMessage, err := RenderMessage(ticket)
+	notificationMessage, err := RenderMessage(ticket, nil)
 	if err != nil {
 		return err
 	}
