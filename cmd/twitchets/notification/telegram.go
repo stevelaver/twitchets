@@ -1,7 +1,7 @@
 package notification
 
 import (
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -12,7 +12,7 @@ type TelegramClient struct {
 
 var _ Client = TelegramClient{}
 
-func (c TelegramClient) SendTicketNotification(ticket twickets.Ticket) error {
+func (c TelegramClient) SendTicketNotification(ticket twigots.TicketListing) error {
 	messageBody, err := RenderMessage(ticket, WithHeader(), WithFooter())
 	if err != nil {
 		return err

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 )
 
 var (
@@ -26,7 +26,7 @@ func init() {
 }
 
 type Client interface {
-	SendTicketNotification(twickets.Ticket) error
+	SendTicketNotification(twigots.TicketListing) error
 }
 
 type MessageTemplateData struct {
@@ -77,7 +77,7 @@ func WithFooter() RenderMessageOption {
 	}
 }
 
-func RenderMessage(ticket twickets.Ticket, options ...RenderMessageOption) (string, error) {
+func RenderMessage(ticket twigots.TicketListing, options ...RenderMessageOption) (string, error) {
 	config := &renderMessageConfig{}
 	config.applyOptions(options...)
 
@@ -87,9 +87,9 @@ func RenderMessage(ticket twickets.Ticket, options ...RenderMessageOption) (stri
 		Venue:               ticket.Event.Venue.Name,
 		Location:            ticket.Event.Venue.Location.Name,
 		TicketType:          ticket.TicketType,
-		NumTickets:          ticket.TicketQuantity,
-		TotalTicketPrice:    ticket.TotalTicketPrice().String(),
-		TotalPrice:          ticket.TotalPrice().String(),
+		NumTickets:          ticket.NumTickets,
+		TotalTicketPrice:    ticket.TicketPriceInclFee().String(),
+		TotalPrice:          ticket.TotalPriceInclFee().String(),
 		OriginalTicketPrice: ticket.OriginalTicketPrice().String(),
 		OriginalTotalPrice:  ticket.OriginalTotalPrice.String(),
 		Discount:            ticket.Discount(),
@@ -101,7 +101,7 @@ func RenderMessage(ticket twickets.Ticket, options ...RenderMessageOption) (stri
 	}
 
 	if config.includeFooter {
-		templateData.Link = ticket.Link()
+		templateData.Link = ticket.URL()
 	}
 
 	var buffer bytes.Buffer

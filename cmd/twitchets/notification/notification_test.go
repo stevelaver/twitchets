@@ -4,36 +4,36 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ahobsonsayers/twigots"
 	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
-	"github.com/ahobsonsayers/twitchets/twickets"
 	"github.com/stretchr/testify/require"
 )
 
-func testNotificationTicket() twickets.Ticket {
-	return twickets.Ticket{
+func testNotificationTicket() twigots.TicketListing {
+	return twigots.TicketListing{
 		Id: "test",
-		Event: twickets.Event{
+		Event: twigots.Event{
 			Name: "Test Event",
-			Venue: twickets.Venue{
+			Venue: twigots.Venue{
 				Name: "Test Venue",
-				Location: twickets.Location{
+				Location: twigots.Location{
 					Name: "Test Location",
 				},
 			},
 		},
-		TicketType:     "Standing",
-		TicketQuantity: 2,
-		TicketsPrice: twickets.Price{
-			Currency: twickets.CurrencyGBP,
+		TicketType: "Standing",
+		NumTickets: 2,
+		TotalPriceExclFee: twigots.Price{
+			Currency: twigots.CurrencyGBP,
 			Amount:   200,
 		},
-		TwicketsFee: twickets.Price{
-			Currency: twickets.CurrencyGBP,
+		TwicketsFee: twigots.Price{
+			Currency: twigots.CurrencyGBP,
 			Amount:   100,
 		},
-		OriginalTotalPrice: twickets.Price{
-			Currency: twickets.CurrencyGBP,
+		OriginalTotalPrice: twigots.Price{
+			Currency: twigots.CurrencyGBP,
 			Amount:   400,
 		},
 	}

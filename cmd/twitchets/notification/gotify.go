@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 	"github.com/gotify/go-api-client/v2/auth"
 	"github.com/gotify/go-api-client/v2/client"
 	"github.com/gotify/go-api-client/v2/client/message"
@@ -22,7 +22,7 @@ type GotifyClient struct {
 
 var _ Client = GotifyClient{}
 
-func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
+func (g GotifyClient) SendTicketNotification(ticket twigots.TicketListing) error {
 	notificationMessage, err := RenderMessage(ticket, WithFooter())
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (g GotifyClient) SendTicketNotification(ticket twickets.Ticket) error {
 			},
 			"client::notification": map[string]any{
 				"click": map[string]any{
-					"url": ticket.Link(),
+					"url": ticket.URL(),
 				},
 			},
 		},

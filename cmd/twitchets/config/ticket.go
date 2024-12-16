@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 )
 
 type TicketConfig struct {
 	Event           string             `json:"event"`
 	EventSimilarity *float64           `json:"eventSimilarity"`
-	Regions         []twickets.Region  `json:"regions"`
+	Regions         []twigots.Region   `json:"regions"`
 	NumTickets      *int               `json:"numTickets"`
 	Discount        *float64           `json:"discount"`
 	Notification    []NotificationType `json:"notification"`
@@ -22,7 +22,7 @@ func (t TicketConfig) Validate() error {
 	}
 
 	for _, region := range t.Regions {
-		if !twickets.Regions.Contains(region) {
+		if !twigots.Regions.Contains(region) {
 			return fmt.Errorf("region '%s' is not valid", region)
 		}
 	}
@@ -36,8 +36,8 @@ func (t TicketConfig) Validate() error {
 	return nil
 }
 
-func (t TicketConfig) Filter() twickets.Filter {
-	var filter twickets.Filter
+func (t TicketConfig) Filter() twigots.Filter {
+	var filter twigots.Filter
 	filter.Event = t.Event
 
 	if t.EventSimilarity != nil {
@@ -53,7 +53,7 @@ func (t TicketConfig) Filter() twickets.Filter {
 	}
 
 	if t.Discount != nil {
-		filter.Discount = *t.Discount
+		filter.MinDiscount = *t.Discount
 	}
 
 	return filter

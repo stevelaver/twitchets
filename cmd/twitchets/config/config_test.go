@@ -6,7 +6,7 @@ import (
 	"github.com/ahobsonsayers/twitchets/cmd/twitchets/config"
 	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
@@ -16,10 +16,10 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 	actualConfig, err := config.Load(configPath)
 	require.NoError(t, err)
 
-	country := twickets.CountryUnitedKingdom
+	country := twigots.CountryUnitedKingdom
 
 	globalEventSimilarity := 75.0
-	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
+	globalRegions := []twigots.Region{twigots.RegionLondon, twigots.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
@@ -57,7 +57,7 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 			{
 				// Ticket with regions set
 				Event:   "Event 3",
-				Regions: []twickets.Region{twickets.RegionSouthWest},
+				Regions: []twigots.Region{twigots.RegionSouthWest},
 			},
 			{
 				// Ticket with num tickets set
@@ -78,7 +78,7 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 				// Ticket with globals unset
 				Event:           "Event 7",
 				EventSimilarity: lo.ToPtr(-1.0),
-				Regions:         []twickets.Region{},
+				Regions:         []twigots.Region{},
 				NumTickets:      lo.ToPtr(-1),
 				Discount:        lo.ToPtr(-1.0),
 				Notification:    []config.NotificationType{},
@@ -97,7 +97,7 @@ func TestCombineConfigs(t *testing.T) { // nolint: revive
 	actualCombinedConfigs := conf.CombineGlobalAndTicketConfig()
 
 	globalEventSimilarity := 75.0
-	globalRegions := []twickets.Region{twickets.RegionLondon, twickets.RegionNorthWest}
+	globalRegions := []twigots.Region{twigots.RegionLondon, twigots.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
 
@@ -124,7 +124,7 @@ func TestCombineConfigs(t *testing.T) { // nolint: revive
 			// Ticket with regions set
 			Event:           "Event 3",
 			EventSimilarity: &globalEventSimilarity,
-			Regions:         []twickets.Region{twickets.RegionSouthWest},
+			Regions:         []twigots.Region{twigots.RegionSouthWest},
 			NumTickets:      &globalNumTickets,
 			Discount:        &globalDiscount,
 			Notification:    config.NotificationTypes.Members(),
@@ -160,7 +160,7 @@ func TestCombineConfigs(t *testing.T) { // nolint: revive
 			// Ticket with globals unset
 			Event:           "Event 7",
 			EventSimilarity: nil,
-			Regions:         []twickets.Region{},
+			Regions:         []twigots.Region{},
 			NumTickets:      nil,
 			Discount:        nil,
 			Notification:    []config.NotificationType{},

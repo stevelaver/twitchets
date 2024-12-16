@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
 	"github.com/samber/lo"
 	"heckel.io/ntfy/client"
 )
@@ -20,7 +20,7 @@ type NtfyClient struct {
 
 var _ Client = NtfyClient{}
 
-func (c NtfyClient) SendTicketNotification(ticket twickets.Ticket) error {
+func (c NtfyClient) SendTicketNotification(ticket twigots.TicketListing) error {
 	notificationMessage, err := RenderMessage(ticket, nil)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func (c NtfyClient) SendTicketNotification(ticket twickets.Ticket) error {
 		c.url.String(),
 		notificationMessage,
 		client.WithTitle(ticket.Event.Name),
-		client.WithActions(NtfyViewAction("Open Link", lo.ToPtr(ticket.Link()))),
+		client.WithActions(NtfyViewAction("Open Link", lo.ToPtr(ticket.URL()))),
 		client.WithHeader("Content-Type", "text/markdown"),
 		client.WithBasicAuth(c.user, c.password),
 	)
