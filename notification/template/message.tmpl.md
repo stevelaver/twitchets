@@ -1,5 +1,5 @@
 {{ if ne .Event "" -}}
-*{{ .Event }}*
+**{{ .Event }}**
 {{- end }}
 
 {{ .Venue }}, {{ .Location }}
@@ -8,10 +8,10 @@
 {{ .NumTickets }} ticket(s) - {{ .TicketType }}
 Ticket Price: {{ .TotalTicketPrice }}
 Total Price: {{ .TotalPrice }}
-{{ if lt .Discount 0.0 -}}
+{{ if eq .Discount "0.00%" }}
 Discount: None
 {{- else -}}
-Discount: {{ printf "%.2f" .Discount }}%
+Discount: {{ .Discount }}
 {{- end }}
 
 Original Ticket Price: {{ .OriginalTicketPrice }}

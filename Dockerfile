@@ -4,7 +4,7 @@ FROM golang:1.21 as builder
 WORKDIR /twitchets
 COPY . .
 RUN go mod download
-RUN go build -v -o ./bin/ ./cmd/twitchets
+RUN go build -v -o ./bin/ .
 
 # Distribution Image
 FROM alpine:latest

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/config"
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
-	"github.com/ahobsonsayers/twitchets/twickets"
+	"github.com/ahobsonsayers/twigots"
+	"github.com/ahobsonsayers/twitchets/config"
+	"github.com/ahobsonsayers/twitchets/notification"
 	"github.com/joho/godotenv"
 )
 
@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// Twickets client
-	twicketsClient := twickets.NewClient(nil)
+	client := twigots.NewClient(nil)
 
 	configPath := filepath.Join(cwd, "config.yaml")
 	conf, err := config.Load(configPath)
@@ -58,7 +58,7 @@ func main() {
 	)
 
 	// Initial execution
-	fetchAndProcessTickets(twicketsClient, conf, notificationClients)
+	fetchAndProcessTickets(client, conf, notificationClients)
 
 	// Create ticker
 	ticker := time.NewTicker(refetchTime)
@@ -69,7 +69,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			fetchAndProcessTickets(twicketsClient, conf, notificationClients)
+			fetchAndProcessTickets(client, conf, notificationClients)
 		case <-exitChan:
 			return
 		}
@@ -77,7 +77,7 @@ func main() {
 }
 
 func fetchAndProcessTickets(
-	twicketsClient *twickets.Client,
+	client *twigots.Client,
 	conf config.Config,
 	notificationClients map[config.NotificationType]notification.Client,
 ) {
@@ -86,48 +86,64 @@ func fetchAndProcessTickets(
 		lastCheckTime = checkTime
 	}()
 
-	tickets, err := twicketsClient.FetchTickets(
+	listings, err := client.FetchTicketListings(
 		context.Background(),
-		twickets.FetchTicketsInput{
+		twigots.FetchTicketListingsInput{
 			// Required
 			APIKey:  conf.APIKey,
-			Country: conf.Country,
+			Country: twigots.CountryUnitedKingdom,
 			// Optional
 			CreatedBefore: time.Now(),
 			CreatedAfter:  lastCheckTime,
-			NumTickets:    maxNumTickets,
+			MaxNumber:     maxNumTickets,
 		},
 	)
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
-	if len(tickets) == maxNumTickets {
+	if len(listings) == maxNumTickets {
 		slog.Warn("Fetched the max number of tickets allowed. It is possible tickets have been missed.")
 	}
 
 	ticketConfigs := conf.CombineGlobalAndTicketConfig()
 	for _, ticketConfig := range ticketConfigs {
 		filter := ticketConfig.Filter()
-		filteredTickets := tickets.Filter(filter)
-		for _, ticket := range filteredTickets {
+		filteredListings, err := listings.Filter(
+			twigots.Filter{
+				Event:           filter.Event,
+				EventSimilarity: filter.EventSimilarity,
+				Regions:         filter.Regions,
+				NumTickets:      filter.NumTickets,
+				MinDiscount:     filter.MinDiscount,
+				CreatedAfter:    filter.CreatedAfter,
+			},
+		)
+		if err != nil {
+			slog.Error(
+				"Failed to filter listings",
+				"err", err,
+			)
+			continue
+		}
+
+		for _, listing := range filteredListings {
 			slog.Info(
 				"Found tickets for monitored event",
-				"eventName", ticket.Event.Name,
-				"numTickets", ticket.TicketQuantity,
-				"ticketPrice", ticket.TotalTicketPrice().String(),
-				"originalTicketPrice", ticket.OriginalTicketPrice().String(),
-				"link", ticket.Link(),
+				"eventName", listing.Event.Name,
+				"numTickets", listing.NumTickets,
+				"ticketPrice", listing.TotalPriceInclFee().String(),
+				"originalTicketPrice", listing.OriginalTicketPrice().String(),
+				"link", listing.URL(),
 			)
 
 			for _, notificationType := range ticketConfig.Notification {
-
 				notificationClient, ok := notificationClients[notificationType]
 				if !ok {
 					continue
 				}
 
-				err := notificationClient.SendTicketNotification(ticket)
+				err := notificationClient.SendTicketNotification(listing)
 				if err != nil {
 					slog.Error(
 						"Failed to send notification",
@@ -135,7 +151,6 @@ func fetchAndProcessTickets(
 					)
 				}
 			}
-
 		}
 	}
 }

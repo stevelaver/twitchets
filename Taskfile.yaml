@@ -18,7 +18,7 @@ tasks:
 
   build:
     cmds:
-      - go build -v -o ./bin/ ./cmd/twitchets
+      - go build -v -o ./bin/ .
 
   build:docker:
     cmds:
@@ -26,7 +26,7 @@ tasks:
 
   run:
     cmds:
-      - go run ./cmd/twitchets
+      - go run .
 
   run:docker:
     deps: [build:docker]

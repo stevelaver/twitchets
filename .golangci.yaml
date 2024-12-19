@@ -41,6 +41,9 @@ linters-settings:
       - name: line-length-limit
         arguments: [120]
 
+      - name: max-public-structs
+        disabled: true
+
       - name: unhandled-error
         arguments:
           - fmt.Printf

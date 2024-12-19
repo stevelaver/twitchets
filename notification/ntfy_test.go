@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
+	"github.com/ahobsonsayers/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/require"

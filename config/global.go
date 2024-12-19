@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/ahobsonsayers/twigots"
 )
 
@@ -16,14 +18,22 @@ type GlobalEventConfig struct {
 }
 
 func (c GlobalEventConfig) Validate() error {
-	// Reuse the filter validation logic
+	// Convert config to a filter
 	filter := twigots.Filter{
 		Event:           "global", // Event must be be set - this is arbitrary
 		EventSimilarity: c.EventSimilarity,
 		Regions:         c.Regions,
 		NumTickets:      c.NumTickets,
-		MinDiscount:     c.Discount,
+		MinDiscount:     c.Discount / 100,
 	}
+
+	// Return a specific error for a discount above the maximum.
+	// We do this as twigots returns a error specifying not > 1, which is misleading
+	if filter.MinDiscount > 1 {
+		return errors.New("discount cannot be > 100")
+	}
+
+	// Validate filter
 	err := filter.Validate()
 	if err != nil {
 		return err

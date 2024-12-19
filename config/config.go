@@ -42,7 +42,7 @@ func (c Config) Validate() error {
 	return nil
 }
 
-func (c Config) CombineGlobalAndTicketConfig() []TicketConfig {
+func (c Config) CombineGlobalAndTicketConfig() []TicketConfig { //nolint:revive
 	combinedConfigs := make([]TicketConfig, 0, len(c.TicketsConfig))
 	for _, ticketConfig := range c.TicketsConfig {
 

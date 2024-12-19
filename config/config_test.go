@@ -3,10 +3,10 @@ package config_test
 import (
 	"testing"
 
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/config"
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
-	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/ahobsonsayers/twigots"
+	"github.com/ahobsonsayers/twitchets/config"
+	"github.com/ahobsonsayers/twitchets/notification"
+	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,7 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 
 	country := twigots.CountryUnitedKingdom
 
-	globalEventSimilarity := 75.0
+	globalEventSimilarity := 0.75
 	globalRegions := []twigots.Region{twigots.RegionLondon, twigots.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
@@ -52,7 +52,7 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 			{
 				// Ticket with name similarity set
 				Event:           "Event 2",
-				EventSimilarity: lo.ToPtr(90.0),
+				EventSimilarity: lo.ToPtr(0.9),
 			},
 			{
 				// Ticket with regions set
@@ -96,7 +96,7 @@ func TestCombineConfigs(t *testing.T) { // nolint: revive
 
 	actualCombinedConfigs := conf.CombineGlobalAndTicketConfig()
 
-	globalEventSimilarity := 75.0
+	globalEventSimilarity := 0.75
 	globalRegions := []twigots.Region{twigots.RegionLondon, twigots.RegionNorthWest}
 	globalNumTickets := 2
 	globalDiscount := 25.0
@@ -114,7 +114,7 @@ func TestCombineConfigs(t *testing.T) { // nolint: revive
 		{
 			// Ticket with event similarity set
 			Event:           "Event 2",
-			EventSimilarity: lo.ToPtr(90.0),
+			EventSimilarity: lo.ToPtr(0.90),
 			Regions:         globalRegions,
 			NumTickets:      &globalNumTickets,
 			Discount:        &globalDiscount,

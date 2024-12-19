@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
+	"github.com/ahobsonsayers/twitchets/notification"
 	"github.com/orsinium-labs/enum"
 )
 

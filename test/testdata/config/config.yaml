@@ -12,7 +12,7 @@ notification:
     chatId: 1234
 
 global:
-  eventSimilarity: 75
+  eventSimilarity: 0.75
   regions:
     - GBLO
     - GBNW
@@ -25,7 +25,7 @@ tickets:
 
   # Ticket with name similarity set
   - event: Event 2
-    eventSimilarity: 90
+    eventSimilarity: 0.9
 
   # Ticket with regions set
   - event: Event 3

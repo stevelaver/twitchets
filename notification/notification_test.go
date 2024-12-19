@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ahobsonsayers/twigots"
-	"github.com/ahobsonsayers/twitchets/cmd/twitchets/notification"
+	"github.com/ahobsonsayers/twitchets/notification"
 	"github.com/ahobsonsayers/twitchets/test/testutils"
 	"github.com/stretchr/testify/require"
 )
