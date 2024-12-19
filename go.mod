@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.23.3
 
 require (
-	github.com/ahobsonsayers/twigots v0.1.6
+	github.com/ahobsonsayers/twigots v0.1.7
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/gotify/go-api-client/v2 v2.0.4
 	github.com/joho/godotenv v1.5.1

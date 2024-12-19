@@ -18,6 +18,12 @@ type GlobalEventConfig struct {
 }
 
 func (c GlobalEventConfig) Validate() error {
+	// Return a specific error for a discount above the maximum.
+	// We do this as twigots returns a error specifying not > 1, which is misleading
+	if c.Discount > 100 {
+		return errors.New("discount cannot be > 100")
+	}
+
 	// Convert config to a filter
 	filter := twigots.Filter{
 		Event:           "global", // Event must be be set - this is arbitrary
@@ -25,12 +31,6 @@ func (c GlobalEventConfig) Validate() error {
 		Regions:         c.Regions,
 		NumTickets:      c.NumTickets,
 		MinDiscount:     c.Discount / 100,
-	}
-
-	// Return a specific error for a discount above the maximum.
-	// We do this as twigots returns a error specifying not > 1, which is misleading
-	if filter.MinDiscount > 1 {
-		return errors.New("discount cannot be > 100")
 	}
 
 	// Validate filter

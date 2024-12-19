@@ -17,14 +17,14 @@ type TicketConfig struct {
 }
 
 func (c TicketConfig) Validate() error {
-	// Convert config to a filter
-	filter := c.Filter()
-
 	// Return a specific error for a discount above the maximum.
 	// We do this as twigots returns a error specifying not > 1, which is misleading
-	if filter.MinDiscount > 1 {
+	if c.Discount != nil && *c.Discount > 100 {
 		return errors.New("discount cannot be > 100")
 	}
+
+	// Convert config to a filter
+	filter := c.Filter()
 
 	// Validate filter
 	err := filter.Validate()
