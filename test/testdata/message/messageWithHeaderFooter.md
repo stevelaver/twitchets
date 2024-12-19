@@ -1,4 +1,4 @@
-**Test Event**
+*Test Event*
 
 Test Venue, Test Location
 Monday 1 January 0001 12:00am

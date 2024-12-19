@@ -55,10 +55,14 @@ type renderMessageConfig struct {
 	includeFooter bool
 }
 
-func (c *renderMessageConfig) applyOptions(options ...RenderMessageOption) {
+func newRenderMessageConfig(options ...RenderMessageOption) renderMessageConfig {
+	config := new(renderMessageConfig)
 	for _, option := range options {
-		option(c)
+		if option != nil {
+			option(config)
+		}
 	}
+	return *config
 }
 
 type RenderMessageOption func(*renderMessageConfig)
@@ -78,8 +82,7 @@ func WithFooter() RenderMessageOption {
 }
 
 func RenderMessage(ticket twigots.TicketListing, options ...RenderMessageOption) (string, error) {
-	config := &renderMessageConfig{}
-	config.applyOptions(options...)
+	config := newRenderMessageConfig(options...)
 
 	templateData := MessageTemplateData{
 		Date:                ticket.Event.Date.Format("Monday 2 January 2006"),

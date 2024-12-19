@@ -1,5 +1,5 @@
 {{ if ne .Event "" -}}
-**{{ .Event }}**
+*{{ .Event }}*
 {{- end }}
 
 {{ .Venue }}, {{ .Location }}

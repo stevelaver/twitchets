@@ -21,7 +21,7 @@ type NtfyClient struct {
 var _ Client = NtfyClient{}
 
 func (c NtfyClient) SendTicketNotification(ticket twigots.TicketListing) error {
-	notificationMessage, err := RenderMessage(ticket, nil)
+	notificationMessage, err := RenderMessage(ticket)
 	if err != nil {
 		return err
 	}
