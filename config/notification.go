@@ -14,6 +14,7 @@ var (
 	notificationType = enum.NewBuilder[string, NotificationType]()
 
 	NotificationTypeNtfy     = notificationType.Add(NotificationType{"ntfy"})
+	NotificationTypeGotify   = notificationType.Add(NotificationType{"gotify"})
 	NotificationTypeTelegram = notificationType.Add(NotificationType{"telegram"})
 
 	NotificationTypes = notificationType.Enum()
@@ -48,6 +49,7 @@ func (c *NotificationType) UnmarshalText(data []byte) error {
 
 type NotificationConfig struct {
 	Ntfy     *notification.NtfyConfig     `json:"ntfy"`
+	Gotify   *notification.GotifyConfig   `json:"gotify"`
 	Telegram *notification.TelegramConfig `json:"telegram"`
 }
 
@@ -61,6 +63,15 @@ func (c NotificationConfig) Clients() (map[NotificationType]notification.Client,
 		}
 
 		clients[NotificationTypeNtfy] = ntfyClient
+	}
+
+	if c.Gotify != nil {
+		gotifyClient, err := notification.NewGotifyClient(*c.Gotify)
+		if err != nil {
+			return nil, fmt.Errorf("failed to setup gotify client: %w", err)
+		}
+
+		clients[NotificationTypeNtfy] = gotifyClient
 	}
 
 	if c.Telegram != nil {

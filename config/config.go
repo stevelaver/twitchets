@@ -57,7 +57,7 @@ func (c Config) CombineGlobalAndTicketConfig() []TicketConfig { //nolint:revive
 		}
 
 		// Set regions
-		if len(ticketConfig.Regions) == 0 {
+		if ticketConfig.Regions == nil {
 			combinedConfig.Regions = c.GlobalConfig.Regions
 		} else {
 			combinedConfig.Regions = ticketConfig.Regions
@@ -78,8 +78,11 @@ func (c Config) CombineGlobalAndTicketConfig() []TicketConfig { //nolint:revive
 		}
 
 		// Set notification methods
-		if len(ticketConfig.Notification) == 0 {
+		if ticketConfig.Notification == nil {
 			combinedConfig.Notification = c.GlobalConfig.Notification
+			if len(combinedConfig.Notification) == 0 {
+				combinedConfig.Notification = NotificationTypes.Members()
+			}
 		} else {
 			combinedConfig.Notification = ticketConfig.Notification
 		}

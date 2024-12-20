@@ -7,6 +7,9 @@ notification:
     topic: test
     username: test
     password: test
+  gotify:
+    url: example.com
+    token: test
   telegram:
     apiToken: test
     chatId: 1234

@@ -39,6 +39,10 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 				Username: "test",
 				Password: "test",
 			},
+			Gotify: &notification.GotifyConfig{
+				Url:   "example.com",
+				Token: "test",
+			},
 			Telegram: &notification.TelegramConfig{
 				APIToken: "test",
 				ChatId:   1234,

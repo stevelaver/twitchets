@@ -21,7 +21,10 @@ func TestGotifySendTicketMessage(t *testing.T) {
 	gotifyToken := os.Getenv("GOTIFY_TOKEN")
 	require.NotEmpty(t, gotifyToken, "GOTIFY_TOKEN is not set")
 
-	client, err := notification.NewGotifyClient(gotifyUrl, gotifyToken)
+	client, err := notification.NewGotifyClient(notification.GotifyConfig{
+		Url:   gotifyUrl,
+		Token: gotifyToken,
+	})
 	require.NoError(t, err)
 
 	ticket := testNotificationTicket()
