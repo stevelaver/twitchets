@@ -7,7 +7,7 @@ A tool to watch for chosen event ticket listings on [Twickets](https://www.twick
 
 **Why twitchets?**
 
-I built this tool because the official Twickets app has limitations on the number of tracked events and lacks many features/filters I wanted and needed.
+I built this tool because the official Twickets app has limitations on the number of events you can watch for tickets, and lacks many features/filters I wanted and needed.
 
 **Note**: This program does **not** buy tickets, reserve them automatically, or do anything unethical. It simply notifies you of new ticket listings!
 
