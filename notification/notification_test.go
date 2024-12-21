@@ -6,7 +6,7 @@ import (
 
 	"github.com/ahobsonsayers/twigots"
 	"github.com/ahobsonsayers/twitchets/notification"
-	"github.com/ahobsonsayers/twitchets/test/testutils"
+	"github.com/ahobsonsayers/twitchets/test"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,8 +40,8 @@ func testNotificationTicket() twigots.TicketListing {
 }
 
 func TestRenderMessage(t *testing.T) {
-	expectedMessagePath := testutils.ProjectDirectoryJoin(
-		t, "test", "testdata", "message", "message.md",
+	expectedMessagePath := test.ProjectDirectoryJoin(
+		t, "test", "data", "message", "message.md",
 	)
 	expectedMessageBytes, err := os.ReadFile(expectedMessagePath)
 	require.NoError(t, err)
@@ -55,8 +55,8 @@ func TestRenderMessage(t *testing.T) {
 }
 
 func TestRenderMessageWithHeaderAndFooter(t *testing.T) {
-	expectedMessagePath := testutils.ProjectDirectoryJoin(
-		t, "test", "testdata", "message", "messageWithHeaderFooter.md",
+	expectedMessagePath := test.ProjectDirectoryJoin(
+		t, "test", "data", "message", "messageWithHeaderFooter.md",
 	)
 	expectedMessageBytes, err := os.ReadFile(expectedMessagePath)
 	require.NoError(t, err)

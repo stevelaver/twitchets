@@ -6,13 +6,13 @@ import (
 	"github.com/ahobsonsayers/twigots"
 	"github.com/ahobsonsayers/twitchets/config"
 	"github.com/ahobsonsayers/twitchets/notification"
-	"github.com/ahobsonsayers/twitchets/test/testutils"
+	"github.com/ahobsonsayers/twitchets/test"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLoadConfig(t *testing.T) { // nolint: revive
-	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
+	configPath := test.ProjectDirectoryJoin(t, "test", "data", "config", "config.yaml")
 	actualConfig, err := config.Load(configPath)
 	require.NoError(t, err)
 
@@ -94,7 +94,7 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 }
 
 func TestCombineConfigs(t *testing.T) { // nolint: revive
-	configPath := testutils.ProjectDirectoryJoin(t, "test", "testdata", "config", "config.yaml")
+	configPath := test.ProjectDirectoryJoin(t, "test", "data", "config", "config.yaml")
 	conf, err := config.Load(configPath)
 	require.NoError(t, err)
 
