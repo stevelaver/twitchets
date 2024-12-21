@@ -76,7 +76,7 @@ Twickets will look for a `config.yaml` in your current working directory, and wi
 The structure of this config.yaml can be seen in [`config.example.yaml`](./config.example.yaml) in this repo, or below
 
 ```yaml
-apiKey: <MUST BE SET. See README.md for detail on how to obtain>
+apiKey: <your twickets api key> # REQUIRED: See README.md for details on how to obtain.
 
 country: GB # Currently only GB is supported
 
@@ -84,23 +84,23 @@ country: GB # Currently only GB is supported
 # Delete the ones you do not need.
 notification:
   ntfy:
-    url: <your url>
-    topic: <your topic>
-    username: <your username>
-    password: <your password>
+    url: <your ntfy url>
+    topic: <your ntfy topic>
+    username: <your ntfy username>
+    password: <your ntfypassword>
   telegram:
-    token: <your api token>
-    chatId: <your chat id>
+    token: <your telegram api token>
+    chatId: <your telegram chat id>
   gotify:
-    url: <your url>
-    token: <your api token>
+    url: <your gotify url>
+    token: <your gotify api token>
 
 # Global configuration that applies to all tickets.
-# These can be overridden on a ticket by ticket basis (see below).
-# The below are examples for all global configuration settings.
+# These can be overridden on a ticket-by-ticket basis (see below).
+# The below are examples of all global configuration settings.
 # Remove the settings you do not need.
 global:
-  # Regions ticket listing must be for.
+  # Regions which ticket listings must be in.
   # Defaults to all regions if not set.
   # Full list of regions can be seen here:
   # https://github.com/ahobsonsayers/twigots/blob/main/location.go#L79-L90
@@ -108,7 +108,7 @@ global:
     - GBLO # Only look for tickets in London
 
   # How similar the event name in the ticket listing must be to the one you specified.
-  # Defaults to 0.85 if not set, to allow for naming inconsistencies.
+  # Defaults to 0.85 if not set, allowing for naming inconsistencies.  # Between 0-1
   # Between 0-1
   eventSimilarity: 0.85
 
@@ -116,55 +116,53 @@ global:
   # Defaults to any number of tickets if not set.
   numTickets: 2
 
-  # Minimum discount (including fees) the tickets in the listing
-  # must have against the original price.
-  # Defaults to any discount of tickets if not set.
+  # Minimum discount (including fees) of the tickets in the listing against the original price.
+  # Defaults to any discount if not set.
   discount: 15
 
-  # Notification services to send found tickets listings to.
+  # Notification services to send found ticket listings to.
   # Defaults to all configured services above.
   notification:
     - ntfy
 
 # Ticket configuration.
 # Settings set here take priority over global settings.
-# If a setting is not set/specified here, global setting will be used
-# To unset a global setting and use the default, set to a negative value or empty list depends on type
-# The below are examples. Tweak them as needed
+# If a setting is not set/specified here, the global setting will be used.
+# To unset a global setting and use the default, set it to a negative value or an empty list, depending on the type.
+# The below are examples. Tweak them as needed.
 tickets:
   # Look for Lion King tickets using the global configuration.
   # For global configuration settings not set, defaults will be used.
-  - event: Lion King # Required
+  - event: Lion King # REQUIRED
 
   # Look for Taylor Swift tickets, overriding the global configuration.
-  # of the defaults for settings not specified.
-  - event: Taylor Swift # Required
+  - event: Taylor Swift # REQUIRED
 
-    # Override global configuration setting
-    # Event name must be an exact match
-    # For example This will NOT match Taylor Swift: The Eras Tour
+    # Override global configuration setting.
+    # Event name must be an exact match.
+    # For example, this will NOT match "Taylor Swift: The Eras Tour".
     eventSimilarity: 1
 
-    # Override global configuration setting
-    # Reset to default - watch for tickets from any region
+    # Override global configuration setting.
+    # Reset to default - watch for tickets from any region.
     regions: []
 
-    # Override global configuration setting
-    # Reset to default - watch for tickets with ANY discount
+    # Override global configuration setting.
+    # Reset to default - watch for tickets with any discount.
     numTickets: -1
 
-    # Override global configuration setting
-    # Reset to default - watch for tickets with ANY discount
+    # Override global configuration setting.
+    # Reset to default - watch for tickets with any discount.
     discount: -1
 
-    # Override global configuration setting
-    # Send notifications to telegram (instead of notify)
+    # Override global configuration setting:
+    # Send notifications to Telegram (instead of ntfy).
     notification:
       - telegram
 
-  # Look for Lion King tickets generally using the global configuration.
-  # Notification will be sent to all notification services configures
-  - event: Oasis # Required
+  # Look for Oasis tickets (mostly) using the global configuration.
+  # Notifications will be sent to all configured notification services.
+  - event: Oasis # REQUIRED
     notification: []
 ```
 
