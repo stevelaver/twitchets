@@ -1,51 +1,40 @@
 # twitchets
 
-[![Go Report
-Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twigots)](https://goreportcard.com/report/github.com/ahobsonsayers/twigots)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twigots)](https://goreportcard.com/report/github.com/ahobsonsayers/twigots)
 [![License - MIT](https://img.shields.io/badge/License-MIT-9C27B0)](LICENSE)
 
-A tool to watch for ticket listings of desired events on [Twickets](https://www.twickets.live) that match certain filters (Discount, Number of tickets, Location), and send you a notification so you can snap them up!
+A tool to watch for chosen event ticket listings on [Twickets](https://www.twickets.live) that match custom filters and send notifications to help you snap them up quickly!
 
-I built this due to the official app notifications having a limit on the number of tracked events, and them not having the features i wanted. See features!
+**Why twitchets?**
 
-**Note**: this program does **not** buy tickets, reserve them automatically, or do anything unethical. All this does it notify you of new tickets!
+I built this tool because the official Twickets app has limitations on the number of tracked events and lacks many features/filters I wanted and needed.
 
-Powered by (my similarly poorly named)
-[twigots](https://github.com/ahobsonsayers/twigots), a package to help retreive these Twicket ticket listings and filter them watch
+**Note**: This program does **not** buy tickets, reserve them automatically, or do anything unethical. It simply notifies you of new ticket listings!
 
-## Installation
-
-```bash
-go get -u github.com/ahobsonsayers/twigots
-```
+Powered by [twigots](https://github.com/ahobsonsayers/twigots), a package to retrieve and filter Twickets ticket listings.
 
 ## Features
 
-- Not limit on the number of Event you can track!
-- Only get notified of Tickets with a certain discount
-- Show more details in the notification - e.g. Event Date/Time, Number Tickets, Discount
-- Faster to notify of new listings than the official Twickets app notificction
-- No need to have the Twickets app or even an account.
-- Your choice of notification service (Telegram, Ntfy, Gotify currently supported)
+- No limit on the number of events you can watch for!
+- On watch for tickets with a certain discount, number of tickets, and location
+- Show more details in the notifications, such as event date/time, number of tickets, and discount
+- Faster notifications than the official Twickets app
+- No need to have the Twickets app or an account
+- Choose from various notification services (Telegram, Ntfy, Gotify currently supported)
 
-## Getting an API key
+## Getting an API Key
 
-To use this tool you will need a Twickets API key. Twickets currently do not have a free API
-HOWEVER it is possible to easily obtain an API key you can use.
+To use this tool, you will need a Twickets API key. Although Twickets doesn't provide a free API, you can easily obtain a key by following these steps:
 
-To do this simply visit the [Twickets Live Feed](https://www.twickets.live/app/catalog/browse),
-open you browser `Developer Tools` (by pressing `F12`), navigate to the `Network` tab, look for the
-`GET` request to `https://www.twickets.live/services/catalogue` and copy the `api_key` query
-parameter from the request.
+1.  Visit the [Twickets Live Feed](https://www.twickets.live/app/catalog/browse)
+2.  Open your browser's Developer Tools (F12) and navigate to the Network tab
+3.  Look for the GET request to `https://www.twickets.live/services/catalogue` and copy the `api_key` query parameter
 
-This API key is not provided here due to liability concerns, but the key seems to be fixed/unchanging and
-is very easy to get using the instructions above.
+This API key is not provided here due to liability concerns, but it appears to be a fixed, unchanging value.
 
 ## Running
 
-The best way to run abs-tract is to use Docker.
-
-To run twitchets using Docker, use the following command:
+The best way to run twitchets is using Docker:
 
 ```bash
 docker run -d \
@@ -55,11 +44,11 @@ docker run -d \
     arranhs/twitchets:latest
 ```
 
-or if you are using docker compose:
+Or, use Docker Compose:
 
 ```yaml
 services:
-  twichets:
+  twitchets:
     container_name: twitchets
     image: arranhs/twitchets:latest
     restart: unless-stopped
@@ -69,11 +58,9 @@ services:
 
 ## Configuration
 
-To start watching for ticket listings and getting notified, you must configure twickets.
+twitchets looks for a `config.yaml` file in your current working directory and fails to start if it's not found.
 
-Twickets will look for a `config.yaml` in your current working directory, and will fail to start if i can not be found.
-
-The structure of this config.yaml can be seen in [`config.example.yaml`](./config.example.yaml) in this repo, or below
+The configuration file structure can be seen in [`config.example.yaml`](./config.example.yaml) or below:
 
 ```yaml
 apiKey: <your twickets api key> # REQUIRED: See README.md for details on how to obtain.
