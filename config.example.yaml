@@ -1,4 +1,4 @@
-apiKey: <MUST BE SET. See README.md for detail on how to obtain>
+apiKey: <your twickets api key> # MUST be set. See README.md for detail on how to obtain
 
 country: GB # Currently only GB is supported
 
