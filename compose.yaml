@@ -1,9 +1,0 @@
-services:
-  twitchets:
-    container_name: twitchets
-    image: arranhs/twitchets
-    restart: unless-stopped
-    build:
-      context: .
-    ports:
-      - "5555:5555"

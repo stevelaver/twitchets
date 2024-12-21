@@ -26,8 +26,8 @@ func TestTelegramSendTicketMessage(t *testing.T) {
 	require.NoError(t, err, "TELEGRAM_CHAT_ID is not an integer")
 
 	client, err := notification.NewTelegramClient(notification.TelegramConfig{
-		APIToken: telegramAPIKey,
-		ChatId:   telegramChatId,
+		Token:  telegramAPIKey,
+		ChatId: telegramChatId,
 	})
 	require.NoError(t, err)
 

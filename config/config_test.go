@@ -44,8 +44,8 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 				Token: "test",
 			},
 			Telegram: &notification.TelegramConfig{
-				APIToken: "test",
-				ChatId:   1234,
+				Token:  "test",
+				ChatId: 1234,
 			},
 		},
 		TicketsConfig: []config.TicketConfig{

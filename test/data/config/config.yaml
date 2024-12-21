@@ -11,7 +11,7 @@ notification:
     url: example.com
     token: test
   telegram:
-    apiToken: test
+    token: test
     chatId: 1234
 
 global:

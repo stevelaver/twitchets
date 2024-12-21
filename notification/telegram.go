@@ -30,12 +30,12 @@ func (c TelegramClient) SendTicketNotification(ticket twigots.TicketListing) err
 }
 
 type TelegramConfig struct {
-	APIToken string `json:"apiToken"`
-	ChatId   int    `json:"chatId"`
+	Token  string `json:"token"`
+	ChatId int    `json:"chatId"`
 }
 
 func NewTelegramClient(config TelegramConfig) (TelegramClient, error) {
-	client, err := tgbotapi.NewBotAPI(config.APIToken)
+	client, err := tgbotapi.NewBotAPI(config.Token)
 	if err != nil {
 		return TelegramClient{}, err
 	}
