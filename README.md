@@ -1,6 +1,6 @@
 # twitchets
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twigots)](https://goreportcard.com/report/github.com/ahobsonsayers/twigots)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twitchets)](https://goreportcard.com/report/github.com/ahobsonsayers/twitchets)
 [![License - MIT](https://img.shields.io/badge/License-MIT-9C27B0)](LICENSE)
 
 A tool to watch for chosen event ticket listings on [Twickets](https://www.twickets.live) that match custom filters and send notifications to help you snap them up quickly!
