@@ -11,7 +11,7 @@ I built this tool because the official Twickets app has limitations on the numbe
 
 **Note**: This program does **not** buy tickets, reserve them automatically, or do anything unethical. It simply notifies you of new ticket listings!
 
-Powered by [twigots](https://github.com/ahobsonsayers/twigots), a package to retrieve and filter Twickets ticket listings.
+Powered by [twigots](https://github.com/ahobsonsayers/twigots), a go package to fetch and filter event ticket listings from Twickets 🎟️
 
 ## Features
 
