@@ -1,17 +1,17 @@
 # twitchets
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twigots)](https://goreportcard.com/report/github.com/ahobsonsayers/twigots)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ahobsonsayers/twitchets)](https://goreportcard.com/report/github.com/ahobsonsayers/twitchets)
 [![License - MIT](https://img.shields.io/badge/License-MIT-9C27B0)](LICENSE)
 
-A tool to watch for chosen event ticket listings on [Twickets](https://www.twickets.live) that match custom filters and send notifications to help you snap them up quickly!
+A tool to watch for chosen event ticket listings on [Twickets](https://www.twickets.live) that match custom filters and notify you so you can quickly snap them up!
 
 **Why twitchets?**
 
-I built this tool because the official Twickets app has limitations on the number of tracked events and lacks many features/filters I wanted and needed.
+I built this tool because the official Twickets app has limitations on the number of events you can watch for tickets, and lacks many features/filters I wanted and needed.
 
 **Note**: This program does **not** buy tickets, reserve them automatically, or do anything unethical. It simply notifies you of new ticket listings!
 
-Powered by [twigots](https://github.com/ahobsonsayers/twigots), a package to retrieve and filter Twickets ticket listings.
+Powered by [twigots](https://github.com/ahobsonsayers/twigots), a go package to fetch and filter event ticket listings from Twickets 🎟️
 
 ## Features
 
@@ -28,7 +28,7 @@ To use this tool, you will need a Twickets API key. Although Twickets doesn't pr
 
 1.  Visit the [Twickets Live Feed](https://www.twickets.live/app/catalog/browse)
 2.  Open your browser's Developer Tools (F12) and navigate to the Network tab
-3.  Look for the GET request to `https://www.twickets.live/services/catalogue` and copy the `api_key` query parameter
+3.  Look for the GET request to `https://www.twickets.live/services/catalogue` and copy the `api_key` query parameter. You might need to refresh the page first if nothing appears in this tab.
 
 This API key is not provided here due to liability concerns, but it appears to be a fixed, unchanging value.
 
