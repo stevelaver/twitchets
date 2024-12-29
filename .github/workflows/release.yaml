@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       commit:
-        description: Full Commit Hash
+        description: Branch, tag or commit hash
         type: string
         required: true
+        default: main
       default-bump:
         description: Default Version Bump (if none found in commit messages)
         type: choice
@@ -14,8 +15,8 @@ on:
           - major
           - minor
           - patch
-        default: patch
         required: false
+        default: patch
 
 jobs:
   create-release:
