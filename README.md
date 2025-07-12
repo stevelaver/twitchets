@@ -71,8 +71,8 @@ country: GB # Currently only GB is supported
 # Delete the ones you do not need.
 notification:
   ntfy:
-    url: <your ntfy url>
-    topic: <your ntfy topic>
+    url: <your ntfy url> - you can use the public instance at https://ntfy.sh
+    topic: <your ntfy topic> - if using https://ntfy.sh, make sure this is unique to you!
     username: <your ntfy username>
     password: <your ntfypassword>
   telegram:
@@ -153,8 +153,12 @@ tickets:
     notification: []
 ```
 
+## How does the event name matching/similarity work?
+
+You can see more about how this works in the [twigots readme here](https://github.com/ahobsonsayers/twigots#how-does-the-event-name-matchingsimilarity-work)
+
 ## Why the name twitchets?
 
 Because I feel like sometimes you need to have twitch like reactions to snap up tickets on Twickets before someone else gets them - which this tool helps you do. Therefore the mangling together of **twitch** and **Twickets** seemed fun and appropriate.
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fahobsonsayers%2Ftwitchets&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visitors+day+%2F+total&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Hits](https://hits.sh/github.com/ahobsonsayers/twitchets.svg?view=today-total&label=Visitors%20Day%20%2F%20Total)](https://hits.sh/github.com/ahobsonsayers/twitchets/)
