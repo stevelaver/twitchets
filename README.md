@@ -95,9 +95,9 @@ global:
     - GBLO # Only look for tickets in London
 
   # How similar the event name in the ticket listing must be to the one you specified.
-  # Defaults to 0.85 if not set, allowing for naming inconsistencies.  # Between 0-1
+  # Defaults to 0.9 if not set, allowing for naming inconsistencies.
   # Between 0-1
-  eventSimilarity: 0.85
+  eventSimilarity: 0.9
 
   # How many tickets must be in the listing.
   # Defaults to any number of tickets if not set.
@@ -124,11 +124,6 @@ tickets:
 
   # Look for Taylor Swift tickets, overriding the global configuration.
   - event: Taylor Swift # REQUIRED
-
-    # Override global configuration setting.
-    # Event name must be an exact match.
-    # For example, this will NOT match "Taylor Swift: The Eras Tour".
-    eventSimilarity: 1
 
     # Override global configuration setting.
     # Reset to default - watch for tickets from any region.
