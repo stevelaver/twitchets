@@ -7,21 +7,23 @@ import (
 // GlobalTicketListingConfig represents configuration settings that apply to all ticket listings
 // unless explicitly overridden by a specific ticket configuration.
 type GlobalTicketListingConfig struct {
-	EventSimilarity float64            `json:"eventSimilarity"`
-	Regions         []twigots.Region   `json:"regions"`
-	NumTickets      int                `json:"numTickets"`
-	Discount        float64            `json:"discount"`
-	Notification    []NotificationType `json:"notification"`
+	EventSimilarity       float64            `json:"eventSimilarity"`
+	Regions               []twigots.Region   `json:"regions"`
+	NumTickets            int                `json:"numTickets"`
+	Min                   float64            `json:"discount"`
+	MaxTicketPriceInclFee float64            `json:"maxTicketPrice"`
+	Notification          []NotificationType `json:"notification"`
 }
 
 // TicketListingConfig represents configuration for a specific ticket listing
 type TicketListingConfig struct {
-	Event           string             `json:"event"`
-	EventSimilarity *float64           `json:"eventSimilarity"`
-	Regions         []twigots.Region   `json:"regions"`
-	NumTickets      *int               `json:"numTickets"`
-	Discount        *float64           `json:"discount"`
-	Notification    []NotificationType `json:"notification"`
+	Event                 string             `json:"event"`
+	EventSimilarity       *float64           `json:"eventSimilarity"`
+	Regions               []twigots.Region   `json:"regions"`
+	NumTickets            *int               `json:"numTickets"`
+	MinDiscount           *float64           `json:"discount"`
+	MaxTicketPriceInclFee *float64           `json:"maxTicketPrice"`
+	Notification          []NotificationType `json:"notification"`
 }
 
 // CombineGlobalAndTicketConfigs merges global and specific ticket listing configurations.
@@ -64,10 +66,17 @@ func CombineGlobalAndTicketListingConfigs( //nolint: revive
 		}
 
 		// Set discount, using global if not specified
-		if config.Discount == nil {
-			combinedConfig.Discount = &globalConfig.Discount
+		if config.MinDiscount == nil {
+			combinedConfig.MinDiscount = &globalConfig.Min
 		} else {
-			combinedConfig.Discount = config.Discount
+			combinedConfig.MinDiscount = config.MinDiscount
+		}
+
+		// Set max ticket price including fee, using global if not specified
+		if config.MaxTicketPriceInclFee == nil {
+			combinedConfig.MaxTicketPriceInclFee = &globalConfig.MaxTicketPriceInclFee
+		} else {
+			combinedConfig.MaxTicketPriceInclFee = config.MaxTicketPriceInclFee
 		}
 
 		// Set notifications, using global if not specified
