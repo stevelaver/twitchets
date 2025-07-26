@@ -1,0 +1,15 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  CI: true
+
+jobs:
+  lint-test:
+    name: Lint and Test
+    uses: ./.github/workflows/lint-test.yaml
+    secrets: inherit

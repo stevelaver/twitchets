@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Main
 
 on:
   push:
@@ -12,57 +12,16 @@ env:
   CI: true
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Run Lint
-        uses: golangci/golangci-lint-action@v8
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-
-      - name: Setup Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download Dependencies
-        run: go mod download
-
-      - name: Run test
-        run: task test
-        env:
-          TWICKETS_API_KEY: ${{ secrets.TWICKETS_API_KEY }}
+  lint-test:
+    name: Lint and Test
+    uses: ./.github/workflows/lint-test.yaml
+    secrets: inherit
 
   build-push:
     name: Build and Push
-    needs: [lint, test]
-    if: github.event_name == 'push' && github.ref_name == 'main'
     uses: ./.github/workflows/build-push.yaml
+    needs: [lint-test]
+    secrets: inherit
     with:
       ref: ${{ github.sha }}
       tags: develop,${{ github.sha }}
-    secrets: inherit
