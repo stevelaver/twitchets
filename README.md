@@ -42,6 +42,21 @@ docker run -d \
     -v <path to config>:/twitchets/config.yaml \
     --restart unless-stopped \
     arranhs/twitchets:latest
+
+# Specify a custom config path with a flag or env var
+docker run -d \
+    --name twitchets \
+    -v <path to config>:/data/my-config.yaml \
+    --restart unless-stopped \
+    arranhs/twitchets:latest --config /data/my-config.yaml
+
+# Or using the TWITCHETS_CONFIG environment variable
+docker run -d \
+    --name twitchets \
+    -v <path to config>:/data/my-config.yaml \
+    -e TWITCHETS_CONFIG=/data/my-config.yaml \
+    --restart unless-stopped \
+    arranhs/twitchets:latest
 ```
 
 Or, use Docker Compose:
@@ -58,7 +73,8 @@ services:
 
 ## Configuration
 
-twitchets looks for a `config.yaml` file in your current working directory and fails to start if it's not found.
+By default twitchets looks for a `config.yaml` file in the current working directory.
+Use the `--config` flag or `TWITCHETS_CONFIG` environment variable to specify a different location.
 
 The configuration file structure can be seen in [`config.example.yaml`](./config.example.yaml) or below:
 
