@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"log/slog"
@@ -25,7 +26,10 @@ const (
 	refetchTime   = 1 * time.Minute
 )
 
-var latestTicketTime time.Time
+var (
+	latestTicketTime time.Time
+	configFlag       = flag.String("config", "", "path to config file")
+)
 
 func init() {
 	_ = godotenv.Load()
@@ -44,8 +48,10 @@ func main() {
 		log.Fatalf("failed to get working directory:, %v", err)
 	}
 
+	flag.Parse()
+
 	// Load config
-	configPath := filepath.Join(cwd, "config.yaml")
+	configPath := resolveConfigPath(cwd)
 	conf, err := config.Load(configPath)
 	if err != nil {
 		log.Fatalf("config error:, %v", err)
@@ -275,4 +281,17 @@ func changeZeroToNegative(value float64) float64 {
 		return -1.0
 	}
 	return value
+}
+
+func resolveConfigPath(cwd string) string {
+	if *configFlag != "" {
+		return *configFlag
+	}
+
+	envPath := os.Getenv("TWITCHETS_CONFIG")
+	if envPath != "" {
+		return envPath
+	}
+
+	return filepath.Join(cwd, "config.yaml")
 }
