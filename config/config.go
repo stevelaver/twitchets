@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	APIKey             string                    `json:"apiKey"`
-	Country            twigots.Country           `json:"country"`
-	Notification       NotificationConfig        `json:"notification"`
-	GlobalTicketConfig GlobalTicketListingConfig `json:"global"`
-	TicketConfigs      []TicketListingConfig     `json:"tickets"`
+	APIKey                 string                    `json:"apiKey"`
+	Country                twigots.Country           `json:"country"`
+	RefetchIntervalSeconds int                       `json:"refetchIntervalSeconds"`
+	Notification           NotificationConfig        `json:"notification"`
+	GlobalTicketConfig     GlobalTicketListingConfig `json:"global"`
+	TicketConfigs          []TicketListingConfig     `json:"tickets"`
 }
 
 func (c Config) Validate() error {
@@ -25,6 +26,10 @@ func (c Config) Validate() error {
 	}
 	if !twigots.Countries.Contains(c.Country) {
 		return fmt.Errorf("country '%s' is not valid", c.Country)
+	}
+
+	if c.RefetchIntervalSeconds < 1 {
+		return errors.New("refetch interval must be at least 1 second")
 	}
 
 	err := c.Notification.Validate()

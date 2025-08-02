@@ -54,6 +54,10 @@ func parseKoanf(k *koanf.Koanf) (Config, error) {
 		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
+	if config.RefetchIntervalSeconds == 0 {
+		config.RefetchIntervalSeconds = 60
+	}
+
 	err = config.Validate()
 	if err != nil {
 		return Config{}, fmt.Errorf("invalid config: %w", err)

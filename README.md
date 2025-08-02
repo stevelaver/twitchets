@@ -83,6 +83,9 @@ apiKey: <your twickets api key> # REQUIRED: See README.md for details on how to 
 
 country: GB # Currently only GB is supported
 
+# Number of seconds between checking for new tickets
+refetchIntervalSeconds: 60
+
 # Notification service configuration
 # Remove/comment out services you don't need
 notification:
