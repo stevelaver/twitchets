@@ -25,8 +25,9 @@ func TestLoadConfig(t *testing.T) { // nolint: revive
 	globalDiscount := 25.0
 
 	expectedConfig := config.Config{
-		APIKey:  "test",
-		Country: country,
+		APIKey:                 "test",
+		Country:                country,
+		RefetchIntervalSeconds: 60,
 		GlobalTicketConfig: config.GlobalTicketListingConfig{
 			EventSimilarity:       globalEventSimilarity,
 			Regions:               globalRegions,
