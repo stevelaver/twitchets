@@ -20,7 +20,7 @@ Powered by [twigots](https://github.com/ahobsonsayers/twigots), a Go package to 
 - Show more details in the notifications, such as event date/time, number of tickets, and discount
 - Faster notifications than the official Twickets app
 - No need to have the Twickets app or an account
-- Choose from various notification services (Telegram, Ntfy, Gotify currently supported)
+- Choose from various notification services (Telegram, Ntfy, Gotify, SQS currently supported)
 
 ## Getting an API Key
 
@@ -103,6 +103,12 @@ notification:
     url: <your gotify url> # Your Gotify server URL
     token: <your gotify api token> # Application token from Gotify
 
+  sqs:
+    queueUrl: <your sqs queue url> # AWS SQS queue URL
+    region: <your aws region> # AWS region, e.g. eu-west-1
+    accessKeyId: <your aws access key id> # Optional: AWS access key
+    secretAccessKey: <your aws secret access key> # Optional: AWS secret key
+
 # Global ticket configuration
 # All available settings are outlined below
 # These settings apply to all tickets by default
@@ -136,6 +142,7 @@ global:
   # Default: All configured services
   notification:
     - ntfy
+    # - sqs
 
 # Individual ticket configuration
 # Available settings match the global ones

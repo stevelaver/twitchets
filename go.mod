@@ -3,10 +3,14 @@ module github.com/ahobsonsayers/twitchets
 go 1.24
 
 require (
-	github.com/ahobsonsayers/twigots v0.6.0
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
-	github.com/gotify/go-api-client/v2 v2.0.4
-	github.com/joho/godotenv v1.5.1
+        github.com/ahobsonsayers/twigots v0.6.0
+       github.com/aws/aws-sdk-go-v2 v1.9.2
+       github.com/aws/aws-sdk-go-v2/config v1.8.3
+       github.com/aws/aws-sdk-go-v2/credentials v1.4.3
+       github.com/aws/aws-sdk-go-v2/service/sqs v1.9.2
+        github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+        github.com/gotify/go-api-client/v2 v2.0.4
+        github.com/joho/godotenv v1.5.1
 	github.com/knadh/koanf v1.5.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/orsinium-labs/enum v1.4.0
