@@ -18,6 +18,7 @@ var (
 	NotificationTypeNtfy     = notificationType.Add(NotificationType{"ntfy"})
 	NotificationTypeGotify   = notificationType.Add(NotificationType{"gotify"})
 	NotificationTypeTelegram = notificationType.Add(NotificationType{"telegram"})
+	NotificationTypeSqs      = notificationType.Add(NotificationType{"sqs"})
 
 	NotificationTypes = notificationType.Enum()
 )
@@ -53,6 +54,7 @@ type NotificationConfig struct {
 	Ntfy     *notification.NtfyConfig     `json:"ntfy"`
 	Gotify   *notification.GotifyConfig   `json:"gotify"`
 	Telegram *notification.TelegramConfig `json:"telegram"`
+	Sqs      *notification.SqsConfig      `json:"sqs"`
 }
 
 func (c NotificationConfig) Validate() error {
@@ -80,6 +82,12 @@ func (c NotificationConfig) Validate() error {
 		}
 		if c.Telegram.Token == "" {
 			return errors.New("telegram token cannot be empty")
+		}
+	}
+
+	if c.Sqs != nil {
+		if c.Sqs.QueueUrl == "" {
+			return errors.New("sqs queue url cannot be empty")
 		}
 	}
 
@@ -114,6 +122,15 @@ func (c NotificationConfig) Clients() (map[NotificationType]notification.Client,
 		}
 
 		clients[NotificationTypeTelegram] = telegramClient
+	}
+
+	if c.Sqs != nil {
+		sqsClient, err := notification.NewSqsClient(*c.Sqs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to setup sqs client: %w", err)
+		}
+
+		clients[NotificationTypeSqs] = sqsClient
 	}
 
 	return clients, nil
