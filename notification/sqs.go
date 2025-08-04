@@ -19,14 +19,9 @@ type SqsClient struct {
 var _ Client = SqsClient{}
 
 func (c SqsClient) SendTicketNotification(ticket twigots.TicketListing) error {
-	message, err := RenderMessage(ticket, WithHeader(), WithFooter())
-	if err != nil {
-		return err
-	}
-
-	_, err = c.client.SendMessage(context.Background(), &sqs.SendMessageInput{
+	_, err := c.client.SendMessage(context.Background(), &sqs.SendMessageInput{
 		QueueUrl:    &c.queueUrl,
-		MessageBody: aws.String(message),
+		MessageBody: aws.String(ticket.URL()),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to send sqs message: %w", err)
